@@ -18,7 +18,7 @@ jobs:
       - name: Enviar para a Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.FTP_HOST || secrets.FTP_HOS }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
           protocol: ftps
