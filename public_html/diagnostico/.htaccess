@@ -1,0 +1,18 @@
+# ============================================================
+# DESTRAVA — configurações do servidor (Apache / Hostinger)
+# ============================================================
+
+# Força HTTPS (a Hostinger já emite certificado SSL grátis)
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Cabeçalhos de segurança básicos
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Nunca liste o conteúdo das pastas
+Options -Indexes

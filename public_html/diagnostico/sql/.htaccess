@@ -1,0 +1,2 @@
+# Ninguém deve conseguir baixar o schema.sql pelo navegador.
+Require all denied

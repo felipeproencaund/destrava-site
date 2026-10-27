@@ -1,0 +1,21 @@
+# Destrava - seguranca do site (Apache/LiteSpeed, Hostinger)
+Options -Indexes
+
+# 1. Forca HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 5. Headers de seguranca
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=15552000"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Nunca servir backups, logs, dumps e zips
+<FilesMatch "\.(zip|log|sql|bak|old|orig|swp)$|\.old\.php$|^\.git">
+  Require all denied
+</FilesMatch>

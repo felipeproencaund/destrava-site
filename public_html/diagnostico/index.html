@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnóstico de Marketing | Destrava</title>
+<meta name="description" content="Descubra o que está travando o marketing da sua empresa e o que precisa ser ajustado.">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Diagnóstico de Marketing | Destrava">
+<meta property="og:description" content="Descubra o que está travando o marketing da sua empresa e o que precisa ser ajustado.">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Destrava">
+<meta property="og:image" content="/assets/img/og-destrava.jpg">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Diagnóstico de Marketing | Destrava">
+<meta name="twitter:description" content="Descubra o que está travando o marketing da sua empresa e o que precisa ser ajustado.">
+
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css?v=7">
+<script src="js/vendor/jspdf.umd.min.js?v=2" defer></script>
+</head>
+<body>
+
+<!-- dataLayer pronto para GTM (nenhum ID inventado — ver js/config.js) -->
+<script>window.dataLayer = window.dataLayer || [];</script>
+
+<div class="app" id="app">
+
+  <!-- ===================== HEADER / PROGRESSO ===================== -->
+  <header class="app-header" id="app-header" hidden>
+    <img class="brand-logo" src="assets/img/logo-destrava.png" alt="Destrava">
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-label" id="progress-label">1 de 10</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- ===================== TELA: INTRO ===================== -->
+    <section class="screen screen-intro" id="screen-intro" aria-labelledby="intro-title">
+      <div class="screen-inner">
+        <img class="brand-logo-intro" src="assets/img/logo-destrava.png" alt="Destrava">
+        <p class="eyebrow">Diagnóstico de Marketing</p>
+        <h1 id="intro-title" class="intro-title">A gente entra. Entende. Resolve.</h1>
+        <p class="intro-lead">
+          Marketing que não decola quase nunca é por falta de esforço. Na maioria das vezes
+          tem um gargalo específico travando o resultado, e de dentro do dia a dia é difícil
+          enxergar qual é.
+        </p>
+        <p class="intro-sub">
+          Responda algumas perguntas sobre como o marketing acontece na sua empresa hoje.
+          Ao final, você recebe um diagnóstico direto sobre onde está o seu principal gargalo.
+        </p>
+        <button class="btn btn-primary btn-large" id="btn-start" type="button">
+          Começar diagnóstico
+        </button>
+        <p class="intro-meta">Leva menos de 3 minutos · 10 perguntas rápidas</p>
+      </div>
+    </section>
+
+    <!-- ===================== TELA: PERGUNTAS (template) ===================== -->
+    <section class="screen screen-question" id="screen-question" aria-live="polite" hidden>
+      <div class="screen-inner">
+        <button class="btn-back" id="btn-back" type="button" aria-label="Voltar para a pergunta anterior" hidden>
+          ← Voltar
+        </button>
+        <h2 class="question-text" id="question-text"></h2>
+        <div class="options-list" id="options-list" role="listbox"></div>
+      </div>
+    </section>
+
+    <!-- ===================== TELA: CAPTURA DO LEAD ===================== -->
+    <section class="screen screen-capture" id="screen-capture" hidden>
+      <div class="screen-inner">
+        <button class="btn-back" id="btn-back-capture" type="button" aria-label="Voltar para as perguntas">
+          ← Voltar
+        </button>
+        <p class="eyebrow">Diagnóstico pronto</p>
+        <h2 class="capture-title">Seu diagnóstico está pronto.</h2>
+        <p class="capture-sub">Agora me diga onde enviar o resultado.</p>
+
+        <form class="lead-form" id="lead-form" novalidate>
+          <div class="field">
+            <label for="input-nome">Nome *</label>
+            <input type="text" id="input-nome" name="nome" autocomplete="name" required maxlength="150">
+            <span class="field-error" id="error-nome"></span>
+          </div>
+
+          <div class="field">
+            <label for="input-empresa">Empresa *</label>
+            <input type="text" id="input-empresa" name="empresa" autocomplete="organization" required maxlength="150">
+            <span class="field-error" id="error-empresa"></span>
+          </div>
+
+          <div class="field">
+            <label for="input-whatsapp">WhatsApp *</label>
+            <input type="tel" id="input-whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel" required
+                   placeholder="(00) 00000-0000" maxlength="20">
+            <span class="field-error" id="error-whatsapp"></span>
+          </div>
+
+          <div class="field">
+            <label for="input-instagram">Instagram (opcional)</label>
+            <input type="text" id="input-instagram" name="instagram" placeholder="@suaempresa" maxlength="200">
+          </div>
+
+          <div class="field">
+            <label for="input-site">Site (opcional)</label>
+            <input type="text" id="input-site" name="site" placeholder="seusite.com.br" maxlength="200">
+          </div>
+
+          <label class="checkbox-field">
+            <input type="checkbox" id="input-consent" name="consentimento" required>
+            <span>Aceito ser contatado pela Destrava para falar sobre este diagnóstico.</span>
+          </label>
+          <span class="field-error" id="error-consent"></span>
+
+          <button class="btn btn-primary btn-large" id="btn-submit-lead" type="submit">
+            Ver meu diagnóstico
+          </button>
+          <p class="form-privacy">Seus dados são usados apenas para te enviar o diagnóstico e falar sobre ele.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================== TELA: RESULTADO ===================== -->
+    <section class="screen screen-result" id="screen-result" hidden>
+      <div class="screen-inner screen-inner-result">
+
+        <p class="eyebrow">Seu principal gargalo hoje</p>
+        <h2 class="result-title" id="result-title"></h2>
+
+        <p class="result-context" id="result-context"></p>
+
+        <div class="result-diagnostic-text" id="result-diagnostic-text"></div>
+
+        <div class="result-block" id="block-signals">
+          <h3 class="result-block-title">Por que chegamos a esse diagnóstico?</h3>
+          <ul class="signal-list" id="signal-list"></ul>
+        </div>
+
+        <div class="result-block" id="block-objective">
+          <h3 class="result-block-title">Você disse que gostaria de chegar a:</h3>
+          <p class="objective-text" id="objective-text"></p>
+          <p class="objective-note">Esse é o resultado que deve orientar qualquer decisão de marketing daqui para frente.</p>
+        </div>
+
+        <div class="result-block" id="block-areas">
+          <h3 class="result-block-title">Áreas que provavelmente precisam ser destravadas</h3>
+          <ol class="areas-list" id="areas-list"></ol>
+        </div>
+
+        <div class="cta-block">
+          <p class="cta-lead">
+            Você não precisa necessariamente fazer mais marketing.
+            Precisa entender o que está impedindo o marketing de funcionar melhor para sua empresa.
+          </p>
+          <p class="cta-transition">É exatamente aí que entra a Destrava.</p>
+          <p class="cta-tagline">A gente entra. Entende. Resolve.</p>
+
+          <button class="btn btn-cta btn-large" id="btn-cta" type="button">
+            🦅 QUERO DESTRAVAR MEU MARKETING
+          </button>
+
+          <button class="btn-pdf" id="btn-pdf" type="button">
+            ⬇ Baixar diagnóstico em PDF
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/quiz-data.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/pdf.js?v=2"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

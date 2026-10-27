@@ -1,0 +1,5 @@
+# Bloqueia acesso direto a arquivos que só devem ser incluídos por outros
+# scripts PHP (nunca chamados diretamente pelo navegador).
+<FilesMatch "^(config|db|helpers)\.php$">
+  Require all denied
+</FilesMatch>
