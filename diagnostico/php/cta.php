@@ -8,6 +8,10 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/db.php';
 
 destrava_require_method('POST');
+destrava_require_same_origin();
+if (!destrava_rate_limit('cta', 30, 3600)) {
+    destrava_json_response(['ok' => false, 'error' => 'Muitas tentativas.'], 429);
+}
 
 $body = destrava_read_json_body();
 $submissionToken = destrava_sanitize_str($body['submission_token'] ?? '', 64);

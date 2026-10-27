@@ -8,6 +8,10 @@ require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/db.php';
 
 destrava_require_method('POST');
+destrava_require_same_origin();
+if (!destrava_rate_limit('submit', 8, 3600)) {
+    destrava_json_response(['ok' => false, 'error' => 'Muitas tentativas. Tente novamente mais tarde.'], 429);
+}
 
 $body = destrava_read_json_body();
 
@@ -22,13 +26,13 @@ $site = destrava_sanitize_str($body['site'] ?? '', 200);
 $consentimento = !empty($body['consentimento']) ? 1 : 0;
 $submissionToken = destrava_sanitize_str($body['submission_token'] ?? '', 64);
 
-$respostas = is_array($body['respostas'] ?? null) ? $body['respostas'] : null;
+$respostas = destrava_limit_list($body['respostas'] ?? null, 40, 20000);
 $diagnosticoId = destrava_sanitize_str($body['diagnostico_id'] ?? '', 5);
 $diagnosticoTitulo = destrava_sanitize_str($body['diagnostico_titulo'] ?? '', 200);
 $gargaloPrincipal = destrava_sanitize_str($body['gargalo_principal'] ?? '', 150);
 $objetivo = destrava_sanitize_str($body['objetivo'] ?? '', 200);
-$sinais = is_array($body['sinais'] ?? null) ? array_values($body['sinais']) : [];
-$areas = is_array($body['areas_desbloqueio'] ?? null) ? array_values($body['areas_desbloqueio']) : [];
+$sinais = array_values(destrava_limit_list($body['sinais'] ?? [], 30, 5000) ?? []);
+$areas = array_values(destrava_limit_list($body['areas_desbloqueio'] ?? [], 30, 5000) ?? []);
 
 $origem = destrava_sanitize_str($body['origem'] ?? '', 200);
 $utmSource = destrava_sanitize_str($body['utm_source'] ?? '', 150);

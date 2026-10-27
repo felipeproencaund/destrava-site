@@ -17,6 +17,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    var yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
     // menu mobile — roda primeiro e de forma independente, pra nunca
     // ficar refém de um erro no bloco do WhatsApp
     try {

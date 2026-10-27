@@ -14,6 +14,8 @@ if (empty($_SESSION['login_attempts'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../php/helpers.php';
+    $blocked = !destrava_rate_limit('login', 10, 900);
     if ($_SESSION['login_attempts'] >= 5) {
         usleep(1500000); // 1.5s de atraso após 5 tentativas
     }
@@ -21,7 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = (string) ($_POST['password'] ?? '');
 
-    if ($username === '' || $password === '') {
+    if ($blocked) {
+        http_response_code(429);
+        $error = 'Muitas tentativas. Aguarde 15 minutos e tente de novo.';
+    } elseif ($username === '' || $password === '') {
         $error = 'Informe usuário e senha.';
     } elseif (destrava_admin_attempt_login($username, $password)) {
         $_SESSION['login_attempts'] = 0;

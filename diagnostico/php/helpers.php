@@ -59,3 +59,68 @@ function destrava_require_method(string $method): void {
         destrava_json_response(['ok' => false, 'error' => 'Método não permitido.'], 405);
     }
 }
+
+
+/**
+ * Limite de requisicoes por IP (arquivos na pasta temporaria do servidor).
+ * Retorna false quando o limite da janela foi excedido.
+ */
+function destrava_rate_limit(string $bucket, int $max, int $windowSeconds): bool {
+    $dir = rtrim(sys_get_temp_dir(), '/') . '/destrava-rl';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0700, true);
+    }
+    $ipHash = destrava_client_ip_hash() ?? 'sem-ip';
+    $file = $dir . '/' . preg_replace('/[^a-z0-9_-]/i', '', $bucket) . '-' . substr($ipHash, 0, 32) . '.json';
+    $now = time();
+    $hits = [];
+    $fh = @fopen($file, 'c+');
+    if (!$fh) {
+        return true; // se nao conseguir gravar, nao bloqueia o usuario
+    }
+    flock($fh, LOCK_EX);
+    $raw = stream_get_contents($fh);
+    $data = $raw ? json_decode($raw, true) : [];
+    if (is_array($data)) {
+        foreach ($data as $t) {
+            if (is_int($t) && $t > $now - $windowSeconds) {
+                $hits[] = $t;
+            }
+        }
+    }
+    $allowed = count($hits) < $max;
+    if ($allowed) {
+        $hits[] = $now;
+    }
+    ftruncate($fh, 0);
+    rewind($fh);
+    fwrite($fh, json_encode($hits));
+    flock($fh, LOCK_UN);
+    fclose($fh);
+    return $allowed;
+}
+
+/** Aceita apenas requisicoes vindas do proprio site (quando o navegador informa a origem). */
+function destrava_require_same_origin(): void {
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origin === '') {
+        return;
+    }
+    $originHost = parse_url($origin, PHP_URL_HOST);
+    $host = preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'] ?? '');
+    if (!$originHost || strcasecmp($originHost, $host) !== 0) {
+        destrava_json_response(['ok' => false, 'error' => 'Origem não permitida.'], 403);
+    }
+}
+
+/** Garante que uma lista vinda do navegador tem tamanho razoavel. */
+function destrava_limit_list($value, int $maxItems, int $maxJsonBytes): ?array {
+    if (!is_array($value) || count($value) > $maxItems) {
+        return null;
+    }
+    $json = json_encode($value, JSON_UNESCAPED_UNICODE);
+    if ($json === false || strlen($json) > $maxJsonBytes) {
+        return null;
+    }
+    return $value;
+}
