@@ -418,3 +418,6 @@ img { max-width: 100%; display: block; }
 .footer-group a { color: var(--color-navy); font-weight: 600; text-decoration: underline; }
 .group-note { font-size: 14px; color: var(--color-text-muted); margin-top: 14px; }
 .group-note a { color: var(--color-navy); font-weight: 600; text-decoration: underline; }
+
+.case-list-items { margin: 10px 0 0 18px; padding: 0; list-style: disc; }
+.case-list-items li { margin: 4px 0; }
