@@ -1,7 +1,5 @@
 # Nunca versionar: credenciais, dados de clientes, backups
 diagnostico/php/config.php
-sorteio/inc/config.local.php
-sorteio-sebrae/registro/*.log
 *.log
 *.zip
 *.old.php
