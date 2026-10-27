@@ -16,6 +16,9 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 </IfModule>
 
 # Nunca servir backups, logs, dumps e zips
-<FilesMatch "\.(zip|log|sql|bak|old|orig|swp)$|\.old\.php$|^\.git">
+<FilesMatch "\.(zip|log|sql|bak|old|orig|swp)$|\.old\.php$|^\.git|^README\.md$">
   Require all denied
 </FilesMatch>
+
+# Nunca expor a pasta .git
+RedirectMatch 404 /\.git

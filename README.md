@@ -1,14 +1,14 @@
 # Site Destrava (vempradestrava.com.br)
 
 HTML puro + PHP (diagnostico e sorteio), hospedado na Hostinger.
-Tudo que vai para o ar fica em `public_html/`.
+A raiz deste repositorio e o `public_html` do servidor (a Hostinger instala direto nele).
 
 ## Estrutura
-- `public_html/*.html` - site institucional (9 paginas, mesmo menu e rodape)
-- `public_html/css`, `js`, `assets` - estilo, scripts, fontes e imagens
-- `public_html/diagnostico/` - quiz de diagnostico + painel admin + PHP
-- `public_html/sorteio/` - ferramenta de sorteios (com login por cliente)
-- `public_html/sorteio-sebrae/` - sorteio da parceria com o Sebrae
+- `*.html` - site institucional (9 paginas, mesmo menu e rodape)
+- `css`, `js`, `assets` - estilo, scripts, fontes e imagens
+- `diagnostico/` - quiz de diagnostico + painel admin + PHP
+- `sorteio/` - ferramenta de sorteios (com login por cliente)
+- `sorteio-sebrae/` - sorteio da parceria com o Sebrae
 
 ## O que NAO vai para o GitHub (ver `.gitignore`)
 - `diagnostico/php/config.php` (senha do banco). Use `config.example.php` como modelo.
