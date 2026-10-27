@@ -1,6 +1,7 @@
 # Publica o site na Hostinger por FTP a cada atualização na branch main.
 # Credenciais ficam nos "Secrets" do GitHub (nunca neste arquivo):
 #   FTP_HOST, FTP_USER, FTP_PASS
+#   DESTRAVA_DB_NAME, DESTRAVA_DB_USER, DESTRAVA_DB_PASS (banco do quiz)
 name: Publicar na Hostinger
 
 on:
@@ -14,6 +15,37 @@ jobs:
     steps:
       - name: Baixar o código
         uses: actions/checkout@v4
+
+      - name: Gerar config.php do quiz a partir dos secrets
+        env:
+          DB_NAME: ${{ secrets.DESTRAVA_DB_NAME }}
+          DB_USER: ${{ secrets.DESTRAVA_DB_USER }}
+          DB_PASS: ${{ secrets.DESTRAVA_DB_PASS }}
+        run: |
+          if [ -z "$DB_NAME" ] || [ -z "$DB_USER" ] || [ -z "$DB_PASS" ]; then
+            echo "Secrets do banco ausentes: config.php nao sera gerado."
+            exit 0
+          fi
+          python3 - <<'PY'
+          import os
+          def q(v):
+              return "'" + v.replace("\\", "\\\\").replace("'", "\\'") + "'"
+          cfg = """<?php
+          define('DB_HOST', 'localhost');
+          define('DB_NAME', %s);
+          define('DB_USER', %s);
+          define('DB_PASS', %s);
+          define('DB_PORT', '3306');
+          define('WHATSAPP_NUMBER', '5543999119533');
+          define('ADMIN_SESSION_NAME', 'destrava_admin_session');
+          define('APP_ENV', 'production');
+          ini_set('display_errors', '0');
+          error_reporting(0);
+          date_default_timezone_set('America/Sao_Paulo');
+          """ % (q(os.environ['DB_NAME']), q(os.environ['DB_USER']), q(os.environ['DB_PASS']))
+          cfg = "\n".join(l.strip() if l.strip().startswith(("define","ini_set","error_","date_","<?php")) else l for l in cfg.splitlines()) + "\n"
+          open('diagnostico/php/config.php', 'w').write(cfg)
+          PY
 
       - name: Enviar para a Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
