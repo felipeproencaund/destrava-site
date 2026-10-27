@@ -1,0 +1,35 @@
+# Publica o site na Hostinger por FTP a cada atualização na branch main.
+# Credenciais ficam nos "Secrets" do GitHub (nunca neste arquivo):
+#   FTP_HOST, FTP_USER, FTP_PASS
+name: Publicar na Hostinger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Enviar para a Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          protocol: ftps
+          local-dir: ./
+          server-dir: ./
+          # Só envia o que mudou; não apaga arquivos que só existem no servidor
+          # (ex.: diagnostico/php/config.php com a senha do banco).
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            README.md
+            .gitignore
+            **/config.example.php
