@@ -5,3 +5,5 @@ diagnostico/php/config.php
 *.old.php
 *.sql.bak
 .env
+diagnostico/logs/*.log
+diagnostico/logs/*.old

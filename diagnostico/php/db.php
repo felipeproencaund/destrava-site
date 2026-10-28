@@ -25,11 +25,13 @@ function destrava_db(): PDO {
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
     } catch (PDOException $e) {
-        http_response_code(500);
+        destrava_log('erro', 'Falha ao conectar no banco: ' . $e->getMessage());
         if (APP_ENV === 'local') {
+            http_response_code(500);
             die('Erro de conexão com o banco: ' . $e->getMessage());
         }
-        die('Não foi possível conectar ao banco de dados no momento.');
+        destrava_friendly_error(503);
+        exit;
     }
 
     return $pdo;

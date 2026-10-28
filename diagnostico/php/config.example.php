@@ -42,3 +42,6 @@ if (APP_ENV === 'local') {
 
 // Timezone
 date_default_timezone_set('America/Sao_Paulo');
+
+// Registro de erros (grava em logs/ e mostra mensagem educada ao usuário)
+require_once __DIR__ . '/errors.php';

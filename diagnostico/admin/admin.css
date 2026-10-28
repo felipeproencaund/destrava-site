@@ -264,3 +264,5 @@ a:hover { text-decoration: underline; }
 .timeline-meta { font-size: 12px; opacity: .7; }
 .timeline p { margin: 4px 0 0; }
 .flash-error { background: #4a2020; color: #ffb4a8; }
+
+.muted { opacity: .7; }

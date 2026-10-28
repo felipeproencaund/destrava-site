@@ -4,6 +4,7 @@ function destrava_admin_head(string $title, string $active = ''): void {
     $nav = [
         'leads' => ['index.php', 'Leads'],
         'novo' => ['novo.php', 'Novo contato'],
+        'erros' => ['erros.php', 'Erros'],
         'senha' => ['senha.php', 'Trocar senha'],
     ];
     ?>

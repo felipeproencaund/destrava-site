@@ -118,7 +118,7 @@ try {
         destrava_json_response(['ok' => true, 'lead_id' => $row ? (int) $row['id'] : null, 'duplicate' => true]);
     }
 
-    http_response_code(500);
+    destrava_log('erro', 'Falha ao salvar lead: ' . $e->getMessage(), ['codigo' => $e->getCode()]);
     destrava_json_response([
         'ok' => false,
         'error' => APP_ENV === 'local' ? $e->getMessage() : 'Não foi possível salvar seu diagnóstico agora.',

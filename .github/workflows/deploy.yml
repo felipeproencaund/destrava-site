@@ -42,8 +42,9 @@ jobs:
           ini_set('display_errors', '0');
           error_reporting(0);
           date_default_timezone_set('America/Sao_Paulo');
+          require_once __DIR__ . '/errors.php';
           """ % (q(os.environ['DB_NAME']), q(os.environ['DB_USER']), q(os.environ['DB_PASS']))
-          cfg = "\n".join(l.strip() if l.strip().startswith(("define","ini_set","error_","date_","<?php")) else l for l in cfg.splitlines()) + "\n"
+          cfg = "\n".join(l.strip() if l.strip().startswith(("define","ini_set","error_","date_","require_once","<?php")) else l for l in cfg.splitlines()) + "\n"
           open('diagnostico/php/config.php', 'w').write(cfg)
           PY
 
