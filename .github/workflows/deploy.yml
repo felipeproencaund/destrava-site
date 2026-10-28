@@ -64,5 +64,6 @@ jobs:
             **/.git*/**
             .github/**
             README.md
+            CLAUDE.md
             .gitignore
             **/config.example.php
