@@ -64,7 +64,7 @@
 :root {
   --color-navy: #182A3A;
   --color-gold: #B89452;
-  --color-gold-text: #826327; /* dourado escuro só para texto: contraste mínimo 4,5:1 */
+  --color-gold-text: #8C6D2D; /* dourado só para texto, um pouco mais escuro que o dourado dos botões */
   --color-ivory: #F5F0E7;
   --color-graphite: #202020;
 
