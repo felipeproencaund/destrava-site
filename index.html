@@ -52,7 +52,7 @@
 }
 </script>
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=7">
 </head>
 <body>
 
@@ -78,15 +78,23 @@
 <main>
 
   <section class="hero hero-institutional">
-    <div class="container hero-inner">
-      <h1 class="hero-title">A gente entra.<br>Entende. Resolve.</h1>
-      <p class="hero-lead">
-        Nem sempre a empresa precisa de mais uma solução. Muitas vezes precisa descobrir
-        o que está travando o negócio.
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="a-destrava.html">Conheça a Destrava</a>
-        <a class="btn btn-outline" href="diagnostico.html">Fazer diagnóstico</a>
+    <div class="container hero-inner hero-split">
+      <div class="hero-text">
+        <h1 class="hero-title">A gente entra.<br>Entende. Resolve.</h1>
+        <p class="hero-lead">
+          Nem sempre a empresa precisa de mais uma solução. Muitas vezes precisa descobrir
+          o que está travando o negócio.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="a-destrava.html">Conheça a Destrava</a>
+          <a class="btn btn-outline" href="diagnostico.html">Fazer diagnóstico</a>
+        </div>
+      </div>
+      <div class="hero-media">
+        <video id="hero-video" muted loop playsinline preload="none" poster="assets/video/felipe-destrava-poster.jpg" width="480" height="600" aria-label="Felipe Proença apresentando a Destrava">
+          <source src="assets/video/felipe-destrava.webm" type="video/webm">
+          <source src="assets/video/felipe-destrava.mp4" type="video/mp4">
+        </video>
       </div>
     </div>
   </section>
@@ -250,6 +258,6 @@
 </footer>
 
 <script src="js/config.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

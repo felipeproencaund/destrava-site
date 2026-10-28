@@ -64,6 +64,18 @@
 
   loadAnalytics();
 
+  // Vídeo do topo: só começa depois que a página carregou, e não roda
+  // para quem pediu menos animação ou está no modo economia de dados.
+  window.addEventListener('load', function () {
+    var v = document.getElementById('hero-video');
+    if (!v || !v.offsetParent) return; // no celular o vídeo fica escondido e nem baixa
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var conn = navigator.connection || {};
+    if (reduce || conn.saveData) return;
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  });
+
   document.addEventListener('DOMContentLoaded', function () {
     var yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
