@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /diagnostico/
+
+Sitemap: https://vempradestrava.com.br/sitemap.xml
