@@ -8,6 +8,16 @@ require_once __DIR__ . '/../php/helpers.php';
 require_once __DIR__ . '/migrate.php';
 
 session_name(ADMIN_SESSION_NAME);
+$destravaHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => $destravaHttps,
+    'httponly' => true,
+    'samesite' => 'Lax',
+]);
+ini_set('session.use_strict_mode', '1');
 session_start();
 
 function destrava_admin_is_logged_in(): bool {
