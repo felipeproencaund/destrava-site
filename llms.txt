@@ -9,6 +9,7 @@
 - [Como trabalhamos](https://vempradestrava.com.br/como-trabalhamos.html): o método de trabalho
 - [Soluções](https://vempradestrava.com.br/solucoes.html): serviços oferecidos
 - [Projetos](https://vempradestrava.com.br/projetos.html): casos e resultados
+- [Diagnóstico](https://vempradestrava.com.br/diagnostico.html): pergunta sobre a empresa e entrega um diagnóstico inicial dos gargalos de marketing
 - [Conteúdo](https://vempradestrava.com.br/conteudo.html)
 - [Sobre](https://vempradestrava.com.br/sobre.html)
 - [Contato](https://vempradestrava.com.br/contato.html)

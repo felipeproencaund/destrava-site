@@ -89,11 +89,13 @@
         toggle.addEventListener('click', function () {
           menu.classList.toggle('is-open');
           toggle.classList.toggle('is-open');
+          toggle.setAttribute('aria-expanded', menu.classList.contains('is-open') ? 'true' : 'false');
         });
         menu.querySelectorAll('a').forEach(function (a) {
           a.addEventListener('click', function () {
             menu.classList.remove('is-open');
             toggle.classList.remove('is-open');
+            toggle.setAttribute('aria-expanded', 'false');
           });
         });
       }
