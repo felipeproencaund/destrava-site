@@ -38,6 +38,7 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 2. Um único H1 por página; H2 e H3 organizados.
 3. JSON-LD do tipo certo (ex.: ProfessionalService).
 4. canonical, og:url, og:image absoluto, robots.txt, sitemap.xml e llms.txt na raiz.
+   - Imagem de compartilhamento (og:image) 1200x630 sempre igual ao visual e slogan atuais. Refazer sem perguntar a cada site novo ou mudança de topo, com nome de arquivo novo (o WhatsApp guarda a antiga).
 5. Performance e celular: imagens leves, sem salto de layout, testar em tela pequena.
 6. Rastreamento de conversões: envio de formulário, clique no WhatsApp, telefone, botões.
 7. Google Search Console: verificar o domínio (registro TXT no DNS), enviar o sitemap, pedir indexação da home.
