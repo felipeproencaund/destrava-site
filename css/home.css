@@ -281,3 +281,13 @@ img{display:block;max-width:100%}
   .fase-card .fase-recebe{margin-top:auto}
   .fase-card p:not(.fase-recebe){margin-bottom:14px}
 }
+/* Final da linha: sobe e termina num foguete (só no computador) */
+.fase-subida{display:none}
+@media (min-width:900px){
+  .fase-marca-fim{position:relative}
+  .fase-subida{display:block;overflow:visible;position:absolute;left:56px;top:-68px;color:var(--ouro);pointer-events:none}
+  .subida-linha{stroke-dasharray:1;stroke-dashoffset:0;transition:stroke-dashoffset .9s ease .2s}
+  .subida-foguete{transition:opacity .4s ease 1s}
+  .fases.anima .fase:not(.aceso) .subida-linha{stroke-dashoffset:1}
+  .fases.anima .fase:not(.aceso) .subida-foguete{opacity:0}
+}
