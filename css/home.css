@@ -212,3 +212,5 @@ img{display:block;max-width:100%}
 .etapa h4{font-family:var(--fd);font-size:15.5px;color:var(--azul);margin:0 0 2px}
 .etapa li p{font-size:14px;color:var(--suave);line-height:1.45;margin:0}
 .etapa li p.f-tec{font-size:12.5px;color:var(--ouro-txt);font-weight:600;margin-top:4px}
+/* Linha dourada alinhada nos 3 cards (computador) */
+@media (min-width:960px){.etapa-topo p{min-height:2.9em}}
