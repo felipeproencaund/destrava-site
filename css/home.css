@@ -290,3 +290,17 @@ img{display:block;max-width:100%}
   .fases.anima .fase:not(.aceso) .subida-linha{stroke-dashoffset:1}
   .fases.anima .fase:not(.aceso) .subida-foguete{opacity:0}
 }
+/* Serviços: cards acendem em sequência ao aparecer na tela */
+.etapa{overflow:hidden}
+.etapa::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--ouro);transform-origin:left;transform:scaleX(1);transition:transform .7s ease .25s}
+.etapa,.etapa li{transition:opacity .6s ease,transform .6s ease}
+.etapa-n{transition:background .4s ease .2s,color .4s ease .2s,box-shadow .4s ease .2s}
+.funil.anima .etapa:not(.visto){opacity:0;transform:translateY(28px)}
+.funil.anima .etapa:not(.visto)::before{transform:scaleX(0)}
+.funil.anima .etapa:not(.visto) .etapa-n{background:var(--ouro-claro);color:var(--ouro-txt)}
+.funil.anima .etapa:not(.visto) li{opacity:0;transform:translateY(12px)}
+.funil.anima .etapa.visto .etapa-n{box-shadow:0 0 0 6px rgb(184 148 82 / .18)}
+.etapa li:nth-child(1){transition-delay:.35s}
+.etapa li:nth-child(2){transition-delay:.47s}
+.etapa li:nth-child(3){transition-delay:.59s}
+.etapa li:nth-child(4){transition-delay:.71s}

@@ -58,3 +58,21 @@ window.addEventListener('load',function(){
   }
   addEventListener('scroll',atualiza,{passive:true}); addEventListener('resize',atualiza); atualiza();
 })();
+
+/* Serviços: os três cards do funil acendem em sequência */
+(function(){
+  var funil=document.querySelector('.funil'); if(!funil||!('IntersectionObserver' in window)) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var etapas=funil.querySelectorAll('.etapa');
+  funil.classList.add('anima');
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var i=Array.prototype.indexOf.call(etapas,e.target);
+      var atraso=innerWidth>=960?i*220:0;
+      setTimeout(function(){ e.target.classList.add('visto'); },atraso);
+      io.unobserve(e.target);
+    });
+  },{threshold:0.2});
+  etapas.forEach(function(et){ io.observe(et); });
+})();
