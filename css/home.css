@@ -222,3 +222,10 @@ img{display:block;max-width:100%}
 .caso-card{background:rgb(255 255 255 / .05);border:1px solid rgb(184 148 82 / .45);border-radius:20px;padding:28px 22px}
 @media (min-width:900px){.caso-card{padding:44px 48px}}
 .caso-frase{color:#fff;font-family:Sora,sans-serif;font-weight:800;font-size:clamp(24px,3.2vw,32px);line-height:1.2;margin:10px 0 28px;max-width:20ch}
+/* Case: logo e entregas */
+.caso-logo{display:block;width:170px;height:auto;margin:0 0 18px}
+.caso-entregas-t{color:var(--ouro);font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
+.caso .caso-lista{grid-template-columns:1fr 1fr;gap:0 24px}
+.caso .caso-lista li{background:none;border:0;border-radius:0;border-bottom:1px solid rgb(255 255 255 / .1);padding:14px 0;font-size:16px;gap:12px}
+.caso .caso-lista li .ic{flex:none;width:20px;height:20px;color:var(--ouro)}
+@media (max-width:420px){.caso .caso-lista{gap:0 16px}.caso .caso-lista li{font-size:15px;gap:10px}}
