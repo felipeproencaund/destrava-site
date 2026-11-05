@@ -190,3 +190,9 @@ img{display:block;max-width:100%}
 @media (max-width:759px){.hero::after{background:rgb(24 42 58 / .7)}}
 @media (prefers-reduced-motion:reduce){.h1-l,.hero-txt>*,.oferta{animation:none!important}}
 .hero h1{font-size:clamp(42px,6.2vw,84px)}
+/* Home sem o cartão: topo numa coluna só */
+@media (min-width:900px){#inicio:not(.hero-diag) .hero-in{grid-template-columns:1fr}}
+#inicio:not(.hero-diag) h1{font-size:clamp(44px,8vw,112px);max-width:12ch}
+#inicio:not(.hero-diag) .hero-apoio{max-width:44ch}
+.hero-diag h1{font-size:clamp(38px,5.4vw,72px)}
+.hero-nota{color:rgb(255 255 255 / .65)}
