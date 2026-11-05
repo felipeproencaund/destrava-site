@@ -49,7 +49,9 @@ window.addEventListener('load',function(){
   ol.classList.add('anima');
   function atualiza(){
     var r=ol.getBoundingClientRect(), h=innerHeight;
-    var p=(h*0.8-r.top)/(r.height*0.9+h*0.25);
+    var p=innerWidth>=900
+      ? (h*0.85-r.top)/(h*0.4)              /* computador: linha deitada, acende enquanto os cards entram na tela */
+      : (h*0.8-r.top)/(r.height*0.9+h*0.25); /* celular: linha em pé, acompanha a rolagem pelos cards */
     p=Math.max(0,Math.min(1,p));
     ol.style.setProperty('--prog',p.toFixed(3));
     fases.forEach(function(f,i){ f.classList.toggle('aceso', p>=i/(n-1)-0.01 && p>0); });
