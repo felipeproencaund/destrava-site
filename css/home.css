@@ -242,3 +242,8 @@ img{display:block;max-width:100%}
 .casos-pontos{display:flex;gap:8px}
 .casos-pontos button{width:10px;height:10px;padding:0;border-radius:50%;border:0;background:rgb(255 255 255 / .3);cursor:pointer}
 .casos-pontos button[aria-current="true"]{background:var(--ouro);width:26px;border-radius:5px}
+/* Como funciona: Fase 1, Fase 2... */
+.passo{flex-direction:column;gap:12px}
+.passo h3{margin-top:0}
+.passo-n{width:auto;height:32px;padding:0 14px;border-radius:999px;font:800 13px/1 var(--fd);letter-spacing:.06em;text-transform:uppercase}
+@media (min-width:860px){.passos::before{top:36px}}
