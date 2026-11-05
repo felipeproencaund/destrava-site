@@ -275,3 +275,9 @@ img{display:block;max-width:100%}
   .fase{grid-template-columns:1fr;gap:18px}
 }
 .caso{border-top:1px solid rgb(255 255 255 / .08)}
+@media (min-width:900px){
+  .fase{grid-template-rows:auto 1fr}
+  .fase-card{display:flex;flex-direction:column;height:100%}
+  .fase-card .fase-recebe{margin-top:auto}
+  .fase-card p:not(.fase-recebe){margin-bottom:14px}
+}
