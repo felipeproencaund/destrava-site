@@ -40,3 +40,19 @@ window.addEventListener('load',function(){
   var t; trilho.addEventListener('scroll',function(){ clearTimeout(t); t=setTimeout(marca,80); });
   marca();
 })();
+
+/* Como funciona: fases acendem conforme a rolagem */
+(function(){
+  var ol=document.getElementById('fases'); if(!ol) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var fases=ol.querySelectorAll('.fase'), n=fases.length;
+  ol.classList.add('anima');
+  function atualiza(){
+    var r=ol.getBoundingClientRect(), h=innerHeight;
+    var p=(h*0.8-r.top)/(r.height*0.9+h*0.25);
+    p=Math.max(0,Math.min(1,p));
+    ol.style.setProperty('--prog',p.toFixed(3));
+    fases.forEach(function(f,i){ f.classList.toggle('aceso', p>=i/(n-1)-0.01 && p>0); });
+  }
+  addEventListener('scroll',atualiza,{passive:true}); addEventListener('resize',atualiza); atualiza();
+})();

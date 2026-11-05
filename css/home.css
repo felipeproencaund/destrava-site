@@ -122,7 +122,7 @@ img{display:block;max-width:100%}
 .servs{margin-top:36px}
 .serv-ic{flex:none;width:44px;height:44px}
 /* Como funciona, versão 2 */
-#como-funciona{background:var(--ouro-claro)}
+#como-funciona{background:var(--azul)}
 .passos{gap:16px;margin-top:36px}
 @media (min-width:860px){.passos{gap:16px}.passo:not(:last-child)::after{display:none}}
 .passo{display:flex;gap:16px;align-items:flex-start;background:var(--branco);border:1px solid var(--borda);border-radius:16px;padding:20px;position:relative}
@@ -247,3 +247,31 @@ img{display:block;max-width:100%}
 .passo h3{margin-top:0}
 .passo-n{width:auto;height:32px;padding:0 14px;border-radius:999px;font:800 13px/1 var(--fd);letter-spacing:.06em;text-transform:uppercase}
 @media (min-width:860px){.passos::before{top:36px}}
+/* Como funciona v3: linha do tempo que acende ao rolar */
+.como{background:var(--azul);color:#fff;position:relative;overflow:hidden}
+.como-fx{position:absolute;inset:0;background-image:radial-gradient(rgb(184 148 82 / .16) 1px,transparent 1.5px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent);mask-image:linear-gradient(180deg,transparent,#000 30%,#000 70%,transparent)}
+.como .wrap{position:relative}
+.como h2{color:#fff;margin-bottom:10px}
+.como-apoio{color:rgb(255 255 255 / .72);font-size:18px;margin:0}
+.fases{list-style:none;padding:0;margin:40px 0 0;position:relative;display:grid;gap:20px;--prog:1}
+.fases::before,.fases::after{content:"";position:absolute;left:27px;top:28px;bottom:28px;width:2px;background:rgb(255 255 255 / .14)}
+.fases::after{background:var(--ouro);transform-origin:top;transform:scaleY(var(--prog))}
+.fase{display:grid;grid-template-columns:56px 1fr;gap:16px;position:relative;z-index:1}
+.fase-marca{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--ouro);color:var(--azul);border:2px solid var(--ouro);box-shadow:0 0 0 6px rgb(184 148 82 / .16);transition:background .4s,color .4s,border-color .4s,box-shadow .4s}
+.fase-ic .ic{width:24px;height:24px;display:block}
+.fase-card{background:rgb(255 255 255 / .05);border:1px solid rgb(184 148 82 / .5);border-radius:16px;padding:20px 22px;transition:opacity .5s,transform .5s,border-color .5s}
+.fase-n{display:inline-block;color:var(--ouro);font:800 12px/1 var(--fd);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.fase-card h3{color:#fff;font-size:20px;margin:0 0 6px}
+.fase-card p{color:rgb(255 255 255 / .75);font-size:15px;line-height:1.5;margin:0}
+.fase-card .fase-recebe{margin-top:14px;padding-top:12px;border-top:1px solid rgb(255 255 255 / .1);color:#fff;font-weight:700}
+.fase-recebe span{display:block;color:var(--ouro);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:2px}
+/* estado apagado, só quando o JS liga a animação */
+.fases.anima .fase:not(.aceso) .fase-marca{background:var(--azul);color:rgb(255 255 255 / .45);border-color:rgb(255 255 255 / .2);box-shadow:none}
+.fases.anima .fase:not(.aceso) .fase-card{opacity:.4;transform:translateY(10px);border-color:rgb(255 255 255 / .1)}
+@media (min-width:900px){
+  .fases{grid-template-columns:repeat(4,1fr);gap:20px}
+  .fases::before,.fases::after{top:27px;bottom:auto;left:28px;right:calc(25% - 43px);width:auto;height:2px}
+  .fases::after{transform-origin:left;transform:scaleX(var(--prog))}
+  .fase{grid-template-columns:1fr;gap:18px}
+}
+.caso{border-top:1px solid rgb(255 255 255 / .08)}
