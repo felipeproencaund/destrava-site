@@ -24,3 +24,19 @@ window.addEventListener('load',function(){
     })(t0);
   }
 });
+
+/* Carrossel de cases: só liga com 2 ou mais cases */
+(function(){
+  var trilho=document.getElementById('casos-trilho'); if(!trilho) return;
+  var cards=trilho.querySelectorAll('.caso-card'); if(cards.length<2) return;
+  var nav=trilho.parentNode.querySelector('.casos-nav'), pontos=nav.querySelector('.casos-pontos');
+  var setas=nav.querySelectorAll('.casos-seta');
+  nav.hidden=false;
+  function atual(){ return Math.round(trilho.scrollLeft/trilho.clientWidth); }
+  function vai(i){ i=Math.max(0,Math.min(cards.length-1,i)); trilho.scrollTo({left:cards[i].offsetLeft-trilho.offsetLeft,behavior:'smooth'}); }
+  cards.forEach(function(c,i){ var b=document.createElement('button'); b.type='button'; b.setAttribute('aria-label','Case '+(i+1)); b.addEventListener('click',function(){vai(i);}); pontos.appendChild(b); });
+  function marca(){ var a=atual(); pontos.querySelectorAll('button').forEach(function(b,i){ b.setAttribute('aria-current',i===a?'true':'false'); }); setas[0].disabled=a===0; setas[1].disabled=a===cards.length-1; }
+  setas.forEach(function(s){ s.addEventListener('click',function(){ vai(atual()+Number(s.dataset.dir)); }); });
+  var t; trilho.addEventListener('scroll',function(){ clearTimeout(t); t=setTimeout(marca,80); });
+  marca();
+})();
