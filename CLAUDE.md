@@ -52,5 +52,5 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 ## Regras fixas
 - LGPD: banner de cookies antes de ligar o Google Analytics (ID ainda pendente).
 - Nada de "sorteio" no site (foi removido de vez).
-- Grupo Undertake aparece só no rodapé.
+- Grupo Undertake aparece só no rodapé e no card do fundador ("Quem está por trás da Destrava").
 - A senha provisória do CRM deve ser trocada no primeiro acesso.
