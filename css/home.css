@@ -214,3 +214,5 @@ img{display:block;max-width:100%}
 .etapa li p.f-tec{font-size:12.5px;color:var(--ouro-txt);font-weight:600;margin-top:4px}
 /* Linha dourada alinhada nos 3 cards (computador) */
 @media (min-width:960px){.etapa-topo p{min-height:2.9em}}
+/* Celular: logo no centro do cabeçalho */
+@media (max-width:860px){.topo-in{position:relative;justify-content:flex-end}.topo .logo{position:absolute;left:50%;transform:translateX(-50%)}}
