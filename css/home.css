@@ -401,3 +401,4 @@ img{display:block;max-width:100%}
 @media (min-width:900px){.final-in{padding:72px 48px}}
 .rodape{margin-top:0}
 @media (max-width:1199px){.final .final-in{margin:0 16px}}@media (min-width:1200px){.final .final-in{max-width:1080px}}
+.rodape-in{display:flex !important;justify-content:center}.rodape-in p{margin:0 !important;text-align:center}
