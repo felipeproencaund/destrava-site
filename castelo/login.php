@@ -26,6 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($blocked) {
         http_response_code(429);
         $error = 'Muitas tentativas. Aguarde 15 minutos e tente de novo.';
+    } elseif ($username !== '' && ($semSenha = destrava_usuario_sem_senha($username))) {
+        // Senha zerada pelo banco: a pessoa cria a senha nova antes de entrar.
+        session_regenerate_id(true);
+        $_SESSION['criar_senha_id'] = $semSenha;
+        header('Location: criar-senha.php');
+        exit;
     } elseif ($username === '' || $password === '') {
         $error = 'Informe usuário e senha.';
     } elseif (destrava_admin_attempt_login($username, $password)) {
@@ -46,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Entrar | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=5">
+<link rel="stylesheet" href="assets/castelo.css?v=6">
 </head>
 <body class="castelo-login">
   <div class="login-card">

@@ -363,3 +363,4 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .crm-form input,.crm-form select,.crm-form textarea,.note-form textarea,.status-select,.lead-card input,.lead-card select,.lead-card textarea{background:#fff;color:var(--a-text);border:1.5px solid var(--a-border);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px}
 .crm-form input:focus,.crm-form select:focus,.crm-form textarea:focus,.note-form textarea:focus{outline:2px solid #B89452;outline-offset:1px;border-color:#B89452}
 .crm-form input::placeholder,.note-form textarea::placeholder{color:#8a8378}
+.login-aviso{color:rgb(255 255 255 / .85);text-align:center;margin:0 0 18px}.castelo-login .login-form input{color:#182A3A}

@@ -66,6 +66,13 @@ function destrava_admin_attempt_login(string $username, string $password): bool 
     return false;
 }
 
+/** Id do usuário cuja senha foi zerada no banco (password_hash vazio), ou 0. */
+function destrava_usuario_sem_senha(string $username): int {
+    $stmt = destrava_db()->prepare("SELECT id FROM admin_users WHERE username = :u AND (password_hash IS NULL OR password_hash = '') LIMIT 1");
+    $stmt->execute(['u' => strtolower($username)]);
+    return (int) ($stmt->fetchColumn() ?: 0);
+}
+
 function destrava_admin_logout(): void {
     $_SESSION = [];
     session_destroy();
