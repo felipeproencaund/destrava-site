@@ -76,3 +76,12 @@ window.addEventListener('load',function(){
   },{threshold:0.2});
   etapas.forEach(function(et){ io.observe(et); });
 })();
+
+/* Nossos cases: card entra animado ao aparecer */
+(function(){
+  var trilho=document.getElementById('casos-trilho'); if(!trilho||!('IntersectionObserver' in window)) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var cards=trilho.querySelectorAll('.caso-card'); trilho.classList.add('anima');
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visto'); io.unobserve(e.target);} }); },{threshold:0.2});
+  cards.forEach(function(c){ io.observe(c); });
+})();

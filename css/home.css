@@ -322,3 +322,27 @@ img{display:block;max-width:100%}
 .fundador-lista span{display:block;font-size:14px;color:var(--suave);margin-top:2px}
 @media (min-width:900px){.fase-card .fase-recebe{min-height:98px}}
 @media (min-width:900px){.fase{gap:30px}}
+/* Nossos cases v2: fundo com brilho dourado e card que entra animado */
+.caso{background:radial-gradient(ellipse 60% 70% at 88% 15%,rgb(184 148 82 / .22),transparent 60%),radial-gradient(ellipse 50% 60% at 5% 95%,rgb(184 148 82 / .10),transparent 60%),linear-gradient(180deg,#1f3549,#182A3A);border-top:0}
+.caso .casos-titulo{position:relative;padding-left:18px}
+.caso .casos-titulo::before{content:"";position:absolute;left:0;top:.15em;bottom:.15em;width:4px;border-radius:2px;background:var(--ouro)}
+.casos-apoio{padding-left:18px}
+.caso-card{background:linear-gradient(135deg,rgb(255 255 255 / .09),rgb(255 255 255 / .03));border:1px solid rgb(184 148 82 / .55);box-shadow:0 30px 60px rgb(0 0 0 / .25),inset 0 1px 0 rgb(255 255 255 / .08);transition:opacity .7s ease,transform .7s ease,box-shadow .3s ease,border-color .3s ease}
+.caso-card:hover{border-color:var(--ouro);box-shadow:0 30px 60px rgb(0 0 0 / .3),0 0 0 4px rgb(184 148 82 / .12)}
+.caso-card .caso-lista li{transition:opacity .5s ease,transform .5s ease}
+.caso-card .caso-lista li:nth-child(1){transition-delay:.35s}.caso-card .caso-lista li:nth-child(2){transition-delay:.42s}
+.caso-card .caso-lista li:nth-child(3){transition-delay:.49s}.caso-card .caso-lista li:nth-child(4){transition-delay:.56s}
+.caso-card .caso-lista li:nth-child(5){transition-delay:.63s}.caso-card .caso-lista li:nth-child(6){transition-delay:.70s}
+.caso-card .caso-lista li:nth-child(7){transition-delay:.77s}
+.caso-card .caso-lista li .ic{transition:transform .3s ease}
+.caso-card .caso-lista li:hover .ic{transform:scale(1.2)}
+.casos-trilho.anima .caso-card:not(.visto){opacity:0;transform:translateY(32px)}
+.casos-trilho.anima .caso-card:not(.visto) .caso-lista li{opacity:0;transform:translateX(-10px)}
+/* Nossos cases v3: fundo claro pra separar do Como funciona; card azul em destaque */
+.caso{background:var(--ouro-claro);color:var(--tinta)}
+.caso .casos-titulo{color:var(--azul)}
+.casos-apoio{color:var(--suave)}
+.caso-card{background:radial-gradient(ellipse 70% 90% at 100% 0%,rgb(184 148 82 / .28),transparent 60%),linear-gradient(135deg,#22384B,#182A3A);color:#fff;border:1px solid rgb(184 148 82 / .6);box-shadow:0 30px 60px rgb(24 42 58 / .28)}
+.caso-card:hover{box-shadow:0 34px 70px rgb(24 42 58 / .35),0 0 0 4px rgb(184 148 82 / .2)}
+.casos-seta{color:var(--azul);border-color:rgb(24 42 58 / .35)}
+.casos-pontos button{background:rgb(24 42 58 / .25)}
