@@ -33,6 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = ['success', 'Usuário alterado. No próximo login, entre com "' . $novo . '".'];
             }
         }
+    } elseif ($acao === 'excluir') {
+        $alvo = (int) ($_POST['id'] ?? 0);
+        if ($alvo > 0 && $alvo !== (int) $_SESSION['admin_user_id']) {
+            $pdo->prepare('DELETE FROM admin_users WHERE id = :id')->execute(['id' => $alvo]);
+            $msg = ['success', 'Usuário excluído.'];
+        } else {
+            $msg = ['error', 'Você não pode excluir o seu próprio usuário.'];
+        }
     } elseif ($acao === 'senha') {
         $nova = (string) ($_POST['nova'] ?? '');
         $conf = (string) ($_POST['confirma'] ?? '');
@@ -51,6 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $csrf = destrava_csrf_token();
+$outros = $pdo->prepare('SELECT id, username FROM admin_users WHERE id <> :id ORDER BY username');
+$outros->execute(['id' => $_SESSION['admin_user_id']]);
+$outros = $outros->fetchAll();
 destrava_admin_head('Minha conta', 'senha');
 ?>
 <div class="page-head"><h1>Minha conta</h1></div>
@@ -74,4 +85,26 @@ destrava_admin_head('Minha conta', 'senha');
     <button type="submit" class="btn-primary">Salvar nova senha</button>
   </form>
 </div>
+
+<section class="painel-card conta-usuarios">
+  <h2>Outros usuários com acesso</h2>
+  <?php if (!$outros): ?>
+    <p class="empty-state">Só você tem acesso ao Castelo.</p>
+  <?php else: ?>
+    <ul class="lista-simples">
+      <?php foreach ($outros as $u): ?>
+        <li>
+          <strong><?= h($u['username']) ?></strong>
+          <form method="post" class="form-excluir" data-confirm="Excluir o usuário <?= h($u['username']) ?>? Ele perde o acesso ao Castelo.">
+            <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+            <input type="hidden" name="acao" value="excluir">
+            <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
+            <input type="password" name="atual" placeholder="Sua senha" autocomplete="current-password" required>
+            <button type="submit" class="btn-danger">Excluir</button>
+          </form>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+</section>
 <?php destrava_admin_foot();
