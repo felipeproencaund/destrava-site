@@ -356,3 +356,15 @@ img{display:block;max-width:100%}
 }
 .caso-card .caso-mock{transition:opacity .8s ease .15s,transform .8s ease .15s}
 .casos-trilho.anima .caso-card:not(.visto) .caso-mock{opacity:0;transform:translateX(30px) scale(.97)}
+/* Aparelhos claros, com brilho atrás e flutuando */
+.caso-mock{position:relative;padding:4% 0 8%}
+.caso-mock::before{content:"";position:absolute;left:10%;right:5%;top:10%;bottom:5%;background:radial-gradient(closest-side,rgb(184 148 82 / .45),transparent);filter:blur(10px);z-index:0}
+.caso-mock img{position:relative;z-index:1;filter:drop-shadow(0 26px 34px rgb(0 0 0 / .45))}
+.caso-mock .mock-note{width:88%}
+.caso-mock .mock-cel{position:absolute;right:0;bottom:2%;width:21%;z-index:2}
+@keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes flutua2{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@media (prefers-reduced-motion:no-preference){
+  .caso-card.visto .mock-note{animation:flutua 6s ease-in-out 1s infinite}
+  .caso-card.visto .mock-cel{animation:flutua2 5s ease-in-out 1.6s infinite}
+}
