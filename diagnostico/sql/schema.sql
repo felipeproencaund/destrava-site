@@ -72,4 +72,4 @@ CREATE TABLE IF NOT EXISTS admin_users (
 INSERT INTO admin_users (username, password_hash)
 VALUES ('admin', '$2y$12$0Zo6Lt4Fo8ZkWMrdRFvOOeubf.IdlsK8SpqSpuULwfQmT/gtppXAG')
 ON DUPLICATE KEY UPDATE username = username;
--- O hash acima corresponde à senha: destrava2026 (verificado com password_verify)
+-- Senha provisória: troque no primeiro acesso (admin/senha.php).
