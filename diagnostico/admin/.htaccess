@@ -1,4 +1,3 @@
-# Bloqueia acesso direto ao arquivo de autenticação (só é incluído por outros scripts)
-<FilesMatch "^auth\.php$">
-  Require all denied
-</FilesMatch>
+# O CRM mudou para o Castelo. Qualquer endereço antigo do admin vai para lá.
+RewriteEngine On
+RewriteRule ^ https://castelo.vempradestrava.com.br/ [R=301,L]

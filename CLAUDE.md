@@ -55,7 +55,7 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 - Usa o mesmo banco e o mesmo config do quiz: `castelo/inc/auth.php` lê `diagnostico/php/config.php`.
 - Telas: Início (Intersect), CRM (leads.php, lead.php, novo.php), Erros, Trocar senha. Financeiro, Contratos e Planejamento aparecem como "em breve" (modulo.php).
 - Sem script dentro do HTML (CSP): confirmações usam `data-confirm` e o JS fica em `castelo/assets/castelo.js`.
-- O antigo diagnostico/admin continua funcionando até o Felipe confirmar o login no Castelo; depois vira redirecionamento.
+- O antigo diagnostico/admin redireciona para o Castelo (desde 06/11/2026). Os arquivos antigos ficam no servidor, mas não abrem.
 
 ## Regras fixas
 - LGPD: banner de cookies antes de ligar o Google Analytics (ID ainda pendente).
