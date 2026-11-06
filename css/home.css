@@ -376,3 +376,10 @@ img{display:block;max-width:100%}
 .rodape-in p{margin-left:auto;order:2}.rodape-in nav{order:3}
 @media (max-width:599px){.rodape-in{flex-direction:column;gap:14px;text-align:center}.rodape-in p{margin:0}}
 @media (max-width:899px){.fases::before,.fases::after{bottom:var(--linha-fim,28px)}}
+/* Rodapé em faixa azul */
+.rodape{background:var(--azul);border-top:0;color:rgb(255 255 255 / .75)}
+.rodape-in{color:rgb(255 255 255 / .75)}
+.rodape-ig{color:#fff;border-color:rgb(255 255 255 / .25)}
+.rodape-ig:hover{background:var(--ouro);color:var(--azul);border-color:var(--ouro)}
+.rodape nav .rodape-ig{color:#fff}.rodape nav .rodape-ig:hover{color:var(--azul)}.rodape .rodape-logo{width:52px;height:52px}
+.rodape .rodape-logo{width:160px;height:auto}
