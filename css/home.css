@@ -391,3 +391,13 @@ img{display:block;max-width:100%}
   .rodape-in nav{order:3;justify-self:end}
   .rodape .rodape-logo{order:1;justify-self:start;width:150px}
 }
+/* Chamada final em card azul, separada do card do fundador */
+.final{background:var(--marfim);padding-top:0}
+.final-in{background:radial-gradient(ellipse 60% 80% at 50% 0%,rgb(184 148 82 / .25),transparent 70%),linear-gradient(160deg,#22384B,#182A3A);border:1px solid rgb(184 148 82 / .5);border-radius:24px;padding:56px 24px;box-shadow:0 30px 60px rgb(24 42 58 / .22)}
+.final h2{color:#fff}
+.final p{color:rgb(255 255 255 / .78)}
+.final .btn-azul{background:var(--ouro);color:var(--azul)}.final .btn-azul:hover{background:#c9a565}
+.final .btn-linha{color:#fff;border-color:rgb(255 255 255 / .6)}.final .btn-linha:hover{background:rgb(255 255 255 / .08)}
+@media (min-width:900px){.final-in{padding:72px 48px}}
+.rodape{margin-top:0}
+@media (max-width:1199px){.final .final-in{margin:0 16px}}@media (min-width:1200px){.final .final-in{max-width:1080px}}
