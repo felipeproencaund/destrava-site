@@ -346,3 +346,13 @@ img{display:block;max-width:100%}
 .caso-card:hover{box-shadow:0 34px 70px rgb(24 42 58 / .35),0 0 0 4px rgb(184 148 82 / .2)}
 .casos-seta{color:var(--azul);border-color:rgb(24 42 58 / .35)}
 .casos-pontos button{background:rgb(24 42 58 / .25)}
+/* Case com print do site em computador e celular */
+.caso-mock img{display:block;width:100%;height:auto;filter:drop-shadow(0 24px 40px rgb(0 0 0 / .35))}
+.caso-entregas{grid-column:1/-1;border-top:1px solid rgb(255 255 255 / .12);padding-top:24px}
+@media (min-width:900px){
+  .caso-card.caso-in{grid-template-columns:.9fr 1.1fr;gap:24px 48px}
+  .caso-mock{margin:-8px -24px -8px 0}
+  .caso .caso-lista{grid-template-columns:repeat(4,1fr);gap:0 24px}
+}
+.caso-card .caso-mock{transition:opacity .8s ease .15s,transform .8s ease .15s}
+.casos-trilho.anima .caso-card:not(.visto) .caso-mock{opacity:0;transform:translateX(30px) scale(.97)}
