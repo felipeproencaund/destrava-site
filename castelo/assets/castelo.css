@@ -357,3 +357,4 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 @media (max-width:900px){.castelo-lado{box-shadow:none}.menu-aberto .castelo-lado{box-shadow:20px 0 40px rgb(0 0 0 / .25)}}
 @media (max-width:600px){.kpis{grid-template-columns:1fr 1fr;gap:10px}.kpi{padding:16px}.kpi strong{font-size:30px}.kpi-rotulo{font-size:11.5px}.kpi-nota{font-size:12px}.funil-lista a{grid-template-columns:120px 1fr 28px}}
 .castelo-login .login-logo{margin:4px auto 28px;width:180px}
+.conta-grade{display:grid;gap:16px;max-width:900px}@media (min-width:800px){.conta-grade{grid-template-columns:1fr 1fr}}.conta-grade .painel-card h2{margin-bottom:6px}

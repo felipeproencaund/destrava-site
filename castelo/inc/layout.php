@@ -18,7 +18,7 @@ function destrava_admin_head(string $title, string $active = ''): void {
 <title><?= h($title) ?> | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=2">
+<link rel="stylesheet" href="assets/castelo.css?v=3">
 <script src="assets/castelo.js?v=1" defer></script>
 </head>
 <body class="castelo-body">
@@ -38,7 +38,7 @@ function destrava_admin_head(string $title, string $active = ''): void {
   </nav>
   <div class="castelo-menu castelo-menu-pe">
     <a href="erros.php" class="<?= $active === 'erros' ? 'is-active' : '' ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0"/></svg><span>Erros do site</span></a>
-    <a href="senha.php" class="<?= $active === 'senha' ? 'is-active' : '' ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Trocar senha</span></a>
+    <a href="senha.php" class="<?= $active === 'senha' ? 'is-active' : '' ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Minha conta</span></a>
     <a href="logout.php"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9"/></svg><span>Sair</span></a>
   </div>
 </aside>
