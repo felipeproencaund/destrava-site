@@ -320,3 +320,4 @@ img{display:block;max-width:100%}
 .fundador-lista li{background:var(--branco);border:1px solid var(--borda);border-left:3px solid var(--ouro);border-radius:12px;padding:14px 16px}
 .fundador-lista strong{display:block;font-family:var(--fd);font-size:15px;color:var(--azul)}
 .fundador-lista span{display:block;font-size:14px;color:var(--suave);margin-top:2px}
+@media (min-width:900px){.fase-card .fase-recebe{min-height:98px}}
