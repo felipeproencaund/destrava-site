@@ -433,7 +433,8 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .castelo-body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:linear-gradient(rgb(255 255 255 / .025) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255 / .025) 1px,transparent 1px);
   background-size:40px 40px;-webkit-mask-image:radial-gradient(ellipse at 60% 0%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse at 60% 0%,#000 20%,transparent 75%)}
-.castelo-area,.castelo-lado{position:relative;z-index:1}
+.castelo-area{position:relative;z-index:1}
+@media (min-width:901px){.castelo-lado{z-index:2}}
 .castelo-body a{color:var(--a-gold)}
 .castelo-body h1,.castelo-body h2,.castelo-body h3{color:#fff}
 
