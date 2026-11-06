@@ -383,3 +383,11 @@ img{display:block;max-width:100%}
 .rodape-ig:hover{background:var(--ouro);color:var(--azul);border-color:var(--ouro)}
 .rodape nav .rodape-ig{color:#fff}.rodape nav .rodape-ig:hover{color:var(--azul)}.rodape .rodape-logo{width:52px;height:52px}
 .rodape .rodape-logo{width:160px;height:auto}
+/* Rodapé harmônico: logo | texto no centro | Instagram */
+@media (min-width:600px){
+  .rodape{padding:36px 0;border-top:1px solid rgb(184 148 82 / .35)}
+  .rodape-in{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px}
+  .rodape-in p{margin:0;order:2;text-align:center;font-size:14px;letter-spacing:.02em}
+  .rodape-in nav{order:3;justify-self:end}
+  .rodape .rodape-logo{order:1;justify-self:start;width:150px}
+}
