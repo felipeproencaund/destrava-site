@@ -529,3 +529,9 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .muted,.empty-state{color:var(--a-text-muted)}
 .lead-card-danger{border-color:rgb(255 138 128 / .3)}
 .form-excluir{flex-wrap:wrap}.form-excluir input{flex:1 1 140px}
+.fin-anexo{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:#E3C27F;white-space:nowrap;cursor:pointer;text-decoration:none}
+.fin-anexo-add{color:var(--a-text-muted);border:1px dashed rgb(255 255 255 / .2);border-radius:999px;padding:3px 10px}
+.fin-anexo-add:hover{color:#E3C27F;border-color:#C9A565}
+.fin-anexo-add input{display:none}
+.fin-form input[type=file]{padding:9px !important;font-size:13px}
+.fin-form input[type=file]::file-selector-button{background:#C9A565;color:#0B141D;border:0;border-radius:6px;padding:6px 10px;margin-right:10px;font-weight:700;cursor:pointer}

@@ -34,9 +34,9 @@ function destrava_admin_require_login(): void {
         destrava_migrate(destrava_db());
         $_SESSION['crm_migrated_v1'] = 1;
     }
-    if (empty($_SESSION['fin_migrated_v1'])) {
+    if (empty($_SESSION['fin_migrated_v2'])) {
         castelo_migrate_financeiro(destrava_db());
-        $_SESSION['fin_migrated_v1'] = 1;
+        $_SESSION['fin_migrated_v2'] = 1;
     }
 }
 
@@ -68,6 +68,41 @@ function destrava_admin_attempt_login(string $username, string $password): bool 
         return true;
     }
     return false;
+}
+
+/** Pasta dos comprovantes (bloqueada para o navegador; só abre por comprovante.php, com login). */
+function castelo_pasta_comprovantes(): string {
+    $dir = __DIR__ . '/../arquivos/comprovantes';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0750, true);
+    }
+    return $dir;
+}
+
+/**
+ * Salva o arquivo enviado (foto ou PDF, até 10 MB) e devolve [nome, tipo], ou uma mensagem de erro em string.
+ * O tipo é conferido pelo conteúdo do arquivo, não pelo nome.
+ */
+function castelo_salvar_comprovante(array $f) {
+    if (($f['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    if ($f['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp_name'])) {
+        return 'Não foi possível receber o arquivo. Tente de novo.';
+    }
+    if ($f['size'] > 10 * 1024 * 1024) {
+        return 'Arquivo grande demais (máximo 10 MB).';
+    }
+    $tipos = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/heic' => 'heic', 'image/heif' => 'heic', 'application/pdf' => 'pdf'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);
+    if (!isset($tipos[$mime])) {
+        return 'Envie uma foto (JPG, PNG, WEBP, HEIC) ou um PDF.';
+    }
+    $nome = bin2hex(random_bytes(16)) . '.' . $tipos[$mime];
+    if (!move_uploaded_file($f['tmp_name'], castelo_pasta_comprovantes() . '/' . $nome)) {
+        return 'Não foi possível salvar o arquivo.';
+    }
+    return [$nome, $mime];
 }
 
 /** Converte "1.234,56", "1234.56" ou "1234" em número. Devolve null se não for valor válido. */

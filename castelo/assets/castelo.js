@@ -30,3 +30,7 @@ document.querySelectorAll('[data-fin-form]').forEach(function (form) {
   form.querySelectorAll('input[name=tipo]').forEach(function (r) { r.addEventListener('change', filtra); });
   filtra();
 });
+/* Financeiro: anexar comprovante envia sozinho ao escolher o arquivo */
+document.querySelectorAll('[data-envia-sozinho]').forEach(function (i) {
+  i.addEventListener('change', function () { if (i.files.length) i.form.submit(); });
+});

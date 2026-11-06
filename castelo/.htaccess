@@ -6,7 +6,7 @@ RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 # Pasta de código interno nunca é acessada pelo navegador
-RewriteRule ^inc/ - [F,L]
+RewriteRule ^(inc|arquivos)/ - [F,L]
 
 DirectoryIndex index.php
 Options -Indexes

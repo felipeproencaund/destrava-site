@@ -7,3 +7,5 @@ diagnostico/php/config.php
 .env
 diagnostico/logs/*.log
 diagnostico/logs/*.old
+# Comprovantes ficam só no servidor (nunca no GitHub)
+castelo/arquivos/comprovantes/

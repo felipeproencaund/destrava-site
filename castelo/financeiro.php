@@ -54,22 +54,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = ['error', 'Escolha a carteira.'];
             } elseif ($valor === null) {
                 $msg = ['error', 'Valor inválido. Use, por exemplo, 150 ou 1.250,90.'];
+            } elseif (is_string($arq = castelo_salvar_comprovante($_FILES['comprovante'] ?? []))) {
+                $msg = ['error', $arq];
             } else {
-                $pdo->prepare('INSERT INTO fin_lancamentos (carteira_id, categoria_id, tipo, descricao, valor, data, pago, criado_por)
-                    VALUES (:c, :k, :t, :d, :v, :dt, :p, :u)')->execute([
+                $pdo->prepare('INSERT INTO fin_lancamentos (carteira_id, categoria_id, tipo, descricao, valor, data, pago, criado_por, comprovante, comprovante_tipo)
+                    VALUES (:c, :k, :t, :d, :v, :dt, :p, :u, :arq, :mime)')->execute([
                     'c' => $cart, 'k' => (int) $okCat->fetchColumn() ? $cat : null, 't' => $tipo,
                     'd' => $desc !== '' ? $desc : ($tipo === 'entrada' ? 'Entrada' : 'Saída'),
                     'v' => $valor, 'dt' => $data, 'p' => $pago, 'u' => $_SESSION['admin_username'] ?? '',
+                    'arq' => $arq[0] ?? null, 'mime' => $arq[1] ?? null,
                 ]);
                 header('Location: financeiro.php' . $qs(['ok' => 1]) . '#lancamentos');
                 exit;
             }
+        } elseif ($acao === 'anexar') {
+            $id = (int) ($_POST['id'] ?? 0);
+            $arq = castelo_salvar_comprovante($_FILES['comprovante'] ?? []);
+            if (is_array($arq)) {
+                $pdo->prepare('UPDATE fin_lancamentos SET comprovante = :a, comprovante_tipo = :m WHERE id = :id')->execute(['a' => $arq[0], 'm' => $arq[1], 'id' => $id]);
+                header('Location: financeiro.php' . $qs(['anexo' => 1]) . '#lancamentos');
+                exit;
+            }
+            $msg = ['error', is_string($arq) ? $arq : 'Escolha um arquivo.'];
         } elseif ($acao === 'pago' || $acao === 'excluir') {
             $id = (int) ($_POST['id'] ?? 0);
             if ($acao === 'pago') {
                 $pdo->prepare('UPDATE fin_lancamentos SET pago = 1 - pago WHERE id = :id')->execute(['id' => $id]);
             } else {
+                $velho = $pdo->prepare('SELECT comprovante FROM fin_lancamentos WHERE id = :id');
+                $velho->execute(['id' => $id]);
+                $arqVelho = (string) $velho->fetchColumn();
                 $pdo->prepare('DELETE FROM fin_lancamentos WHERE id = :id')->execute(['id' => $id]);
+                if ($arqVelho !== '' && preg_match('/^[a-f0-9]{32}\.[a-z]+$/', $arqVelho)) {
+                    @unlink(castelo_pasta_comprovantes() . '/' . $arqVelho);
+                }
             }
             header('Location: financeiro.php' . $qs() . '#lancamentos');
             exit;
@@ -135,6 +153,7 @@ destrava_admin_head('Financeiro', 'financeiro');
 
 <?php if ($msg): ?><p class="flash flash-<?= h($msg[0]) ?>"><?= h($msg[1]) ?></p><?php endif; ?>
 <?php if (!empty($_GET['ok'])): ?><p class="flash flash-success">Lançamento salvo.</p><?php endif; ?>
+<?php if (!empty($_GET['anexo'])): ?><p class="flash flash-success">Comprovante anexado.</p><?php endif; ?>
 
 <nav class="filter-bar" aria-label="Carteiras">
   <a class="filter-chip <?= $c === 0 ? 'is-active' : '' ?>" href="financeiro.php?mes=<?= h($mes) ?>">Todas</a>
@@ -153,7 +172,7 @@ destrava_admin_head('Financeiro', 'financeiro');
 <div class="painel-grade">
   <section class="painel-card fin-lancar">
     <h2>Novo lançamento</h2>
-    <form method="post" class="crm-form fin-form" data-fin-form>
+    <form method="post" class="crm-form fin-form" data-fin-form enctype="multipart/form-data">
       <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
       <input type="hidden" name="acao" value="lancar">
       <div class="fin-tipo" role="radiogroup" aria-label="Tipo">
@@ -175,6 +194,7 @@ destrava_admin_head('Financeiro', 'financeiro');
         <label>Valor (R$)<input type="text" name="valor" inputmode="decimal" placeholder="0,00" required></label>
         <label>Data<input type="date" name="data" value="<?= h($mes === date('Y-m') ? date('Y-m-d') : $ini) ?>" required></label>
       </div>
+      <label>Comprovante ou nota (foto ou PDF, opcional)<input type="file" name="comprovante" accept="image/*,application/pdf"></label>
       <label class="fin-check"><input type="checkbox" name="pago" value="1" checked> Já foi pago / recebido</label>
       <button type="submit" class="btn-primary">Salvar lançamento</button>
     </form>
@@ -217,7 +237,7 @@ destrava_admin_head('Financeiro', 'financeiro');
   <?php else: ?>
   <div class="table-wrap fin-tabela">
     <table>
-      <thead><tr><th>Data</th><th>Descrição</th><th>Carteira</th><th>Categoria</th><th>Valor</th><th>Situação</th><th></th></tr></thead>
+      <thead><tr><th>Data</th><th>Descrição</th><th>Carteira</th><th>Categoria</th><th>Valor</th><th>Situação</th><th>Nota</th><th></th></tr></thead>
       <tbody>
       <?php foreach ($lanc as $l): ?>
         <tr class="<?= $l['pago'] ? '' : 'fin-pendente' ?>">
@@ -233,6 +253,18 @@ destrava_admin_head('Financeiro', 'financeiro');
               <input type="hidden" name="id" value="<?= (int) $l['id'] ?>">
               <button type="submit" class="fin-situacao <?= $l['pago'] ? 'is-ok' : '' ?>" title="Clique para mudar"><?= $l['pago'] ? ($l['tipo'] === 'entrada' ? 'Recebido' : 'Pago') : ($l['tipo'] === 'entrada' ? 'A receber' : 'A pagar') ?></button>
             </form>
+          </td>
+          <td>
+            <?php if ($l['comprovante']): ?>
+              <a class="fin-anexo" href="comprovante.php?id=<?= (int) $l['id'] ?>" target="_blank" rel="noopener" title="Ver comprovante">📎 Ver</a>
+            <?php else: ?>
+              <form method="post" enctype="multipart/form-data" class="fin-anexar">
+                <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+                <input type="hidden" name="acao" value="anexar">
+                <input type="hidden" name="id" value="<?= (int) $l['id'] ?>">
+                <label class="fin-anexo fin-anexo-add">+ Anexar<input type="file" name="comprovante" accept="image/*,application/pdf" data-envia-sozinho></label>
+              </form>
+            <?php endif; ?>
           </td>
           <td>
             <form method="post" data-confirm="Excluir este lançamento?">

@@ -81,6 +81,12 @@ function castelo_migrate_financeiro(PDO $pdo): void {
         CONSTRAINT fk_fin_lanc_cart FOREIGN KEY (carteira_id) REFERENCES fin_carteiras(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    // comprovante (foto ou PDF) de cada lançamento
+    $tem = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'fin_lancamentos' AND COLUMN_NAME = 'comprovante'")->fetchColumn();
+    if (!(int) $tem) {
+        $pdo->exec('ALTER TABLE fin_lancamentos ADD COLUMN comprovante VARCHAR(80) NULL, ADD COLUMN comprovante_tipo VARCHAR(40) NULL');
+    }
+
     if ((int) $pdo->query('SELECT COUNT(*) FROM fin_carteiras')->fetchColumn() === 0) {
         // Lista inicial: tudo editável pelo próprio Castelo (Financeiro > Configurar).
         $base = [
