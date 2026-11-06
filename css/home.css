@@ -358,7 +358,7 @@ img{display:block;max-width:100%}
 .casos-trilho.anima .caso-card:not(.visto) .caso-mock{opacity:0;transform:translateX(30px) scale(.97)}
 /* Aparelhos claros, com brilho atrás e flutuando */
 .caso-mock{position:relative;padding:4% 0 8%}
-.caso-mock::before{content:"";position:absolute;left:10%;right:5%;top:10%;bottom:5%;background:radial-gradient(closest-side,rgb(184 148 82 / .45),transparent);filter:blur(10px);z-index:0}
+.caso-mock::before{content:"";position:absolute;left:4%;right:0;top:0;bottom:0;background:radial-gradient(closest-side,rgb(184 148 82 / .6),transparent);filter:blur(14px);z-index:0}
 .caso-mock img{position:relative;z-index:1;filter:drop-shadow(0 26px 34px rgb(0 0 0 / .45))}
 .caso-mock .mock-note{width:88%}
 .caso-mock .mock-cel{position:absolute;right:0;bottom:2%;width:21%;z-index:2}
