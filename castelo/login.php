@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Entrar | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=4">
+<link rel="stylesheet" href="assets/castelo.css?v=5">
 </head>
 <body class="castelo-login">
   <div class="login-card">

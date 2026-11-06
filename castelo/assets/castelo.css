@@ -359,3 +359,7 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .castelo-login .login-logo{margin:4px auto 28px;width:180px}
 .conta-grade{display:grid;gap:16px;max-width:900px}@media (min-width:800px){.conta-grade{grid-template-columns:1fr 1fr}}.conta-grade .painel-card h2{margin-bottom:6px}
 .conta-usuarios{max-width:900px;margin-top:16px}.form-excluir{display:flex;gap:8px;align-items:center}.form-excluir input{padding:9px 10px;border:1.5px solid var(--a-border);border-radius:8px;font-family:inherit;width:140px}.form-excluir .btn-danger{padding:9px 14px}
+/* Campos claros em todos os formulários (o estilo antigo deixava fundo escuro com texto escuro) */
+.crm-form input,.crm-form select,.crm-form textarea,.note-form textarea,.status-select,.lead-card input,.lead-card select,.lead-card textarea{background:#fff;color:var(--a-text);border:1.5px solid var(--a-border);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:15px}
+.crm-form input:focus,.crm-form select:focus,.crm-form textarea:focus,.note-form textarea:focus{outline:2px solid #B89452;outline-offset:1px;border-color:#B89452}
+.crm-form input::placeholder,.note-form textarea::placeholder{color:#8a8378}
