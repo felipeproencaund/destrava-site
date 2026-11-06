@@ -48,10 +48,11 @@ window.addEventListener('load',function(){
   var fases=ol.querySelectorAll('.fase'), n=fases.length;
   ol.classList.add('anima');
   function atualiza(){
+    var ult=fases[n-1]; ol.style.setProperty('--linha-fim',(ol.offsetHeight-ult.offsetTop-28)+'px');
     var r=ol.getBoundingClientRect(), h=innerHeight;
     var p=innerWidth>=900
       ? (h*0.85-r.top)/(h*0.4)              /* computador: linha deitada, acende enquanto os cards entram na tela */
-      : (h*0.8-r.top)/(r.height*0.9+h*0.25); /* celular: linha em pé, acompanha a rolagem pelos cards */
+      : (h*0.7-(r.top+28))/Math.max(1,ult.offsetTop); /* celular: cada fase acende quando o ícone passa de 70% da tela */
     p=Math.max(0,Math.min(1,p));
     ol.style.setProperty('--prog',p.toFixed(3));
     fases.forEach(function(f,i){ f.classList.toggle('aceso', p>=i/(n-1)-0.01 && p>0); });

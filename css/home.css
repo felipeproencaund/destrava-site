@@ -375,3 +375,4 @@ img{display:block;max-width:100%}
 .rodape nav{align-items:center}
 .rodape-in p{margin-left:auto;order:2}.rodape-in nav{order:3}
 @media (max-width:599px){.rodape-in{flex-direction:column;gap:14px;text-align:center}.rodape-in p{margin:0}}
+@media (max-width:899px){.fases::before,.fases::after{bottom:var(--linha-fim,28px)}}
