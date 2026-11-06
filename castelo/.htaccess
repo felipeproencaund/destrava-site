@@ -1,0 +1,30 @@
+# ============================================================
+# CASTELO — área interna (castelo.vempradestrava.com.br)
+# ============================================================
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Pasta de código interno nunca é acessada pelo navegador
+RewriteRule ^inc/ - [F,L]
+
+DirectoryIndex index.php
+Options -Indexes
+
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set Referrer-Policy "same-origin"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header set X-Robots-Tag "noindex, nofollow"
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-store"
+  </FilesMatch>
+</IfModule>
+
+# Arquivos que não devem ser baixados
+<FilesMatch "\.(sql|log|md|zip|bak|env)$">
+  Require all denied
+</FilesMatch>

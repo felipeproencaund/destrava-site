@@ -50,6 +50,13 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 2. Todo erro gravado em log com data, hora e o que a pessoa fazia. Cliente vê mensagem educada.
 3. Monitor externo (UptimeRobot) para o site e para o /saude, com alerta por e-mail e no app. Testar o alerta uma vez.
 
+## Castelo (área interna)
+- Endereço: castelo.vempradestrava.com.br (pasta `castelo/`, subdomínio criado na Hostinger em 05/11/2026).
+- Usa o mesmo banco e o mesmo config do quiz: `castelo/inc/auth.php` lê `diagnostico/php/config.php`.
+- Telas: Início (Intersect), CRM (leads.php, lead.php, novo.php), Erros, Trocar senha. Financeiro, Contratos e Planejamento aparecem como "em breve" (modulo.php).
+- Sem script dentro do HTML (CSP): confirmações usam `data-confirm` e o JS fica em `castelo/assets/castelo.js`.
+- O antigo diagnostico/admin continua funcionando até o Felipe confirmar o login no Castelo; depois vira redirecionamento.
+
 ## Regras fixas
 - LGPD: banner de cookies antes de ligar o Google Analytics (ID ainda pendente).
 - Nada de "sorteio" no site (foi removido de vez).
