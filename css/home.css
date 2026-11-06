@@ -368,3 +368,8 @@ img{display:block;max-width:100%}
   .caso-card.visto .mock-note{animation:flutua 6s ease-in-out 1s infinite}
   .caso-card.visto .mock-cel{animation:flutua2 5s ease-in-out 1.6s infinite}
 }
+/* Rodapé: ícone D, Instagram só com ícone */
+.rodape-logo{display:block;width:40px;height:40px}
+.rodape-ig{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--azul);border:1px solid var(--borda);transition:background .2s,color .2s}
+.rodape-ig:hover{background:var(--azul);color:var(--ouro)}
+.rodape nav{align-items:center}
