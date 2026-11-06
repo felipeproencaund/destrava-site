@@ -41,5 +41,6 @@ function destrava_admin_uses_default_password(PDO $pdo): bool {
     $stmt = $pdo->prepare('SELECT password_hash FROM admin_users WHERE id = :id');
     $stmt->execute(['id' => $_SESSION['admin_user_id'] ?? 0]);
     $hash = $stmt->fetchColumn();
-    return $hash && password_verify('destrava2026', $hash);
+    // Compara com o hash do schema.sql: se for igual, a senha provisória nunca foi trocada.
+    return $hash && hash_equals('$2y$12$0Zo6Lt4Fo8ZkWMrdRFvOOeubf.IdlsK8SpqSpuULwfQmT/gtppXAG', (string) $hash);
 }

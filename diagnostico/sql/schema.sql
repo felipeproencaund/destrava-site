@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- Usuário admin padrão: admin / destrava2026
+-- Usuário admin padrão: admin (senha provisória; troque no primeiro acesso)
 -- IMPORTANTE: troque a senha assim que possível (tela de admin não inclui
 -- troca de senha por padrão — gere um novo hash com o comando abaixo e
 -- rode um UPDATE, ou peça para eu adicionar essa tela).
