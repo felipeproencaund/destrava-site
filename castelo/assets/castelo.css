@@ -364,3 +364,54 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .crm-form input:focus,.crm-form select:focus,.crm-form textarea:focus,.note-form textarea:focus{outline:2px solid #B89452;outline-offset:1px;border-color:#B89452}
 .crm-form input::placeholder,.note-form textarea::placeholder{color:#8a8378}
 .login-aviso{color:rgb(255 255 255 / .85);text-align:center;margin:0 0 18px}.castelo-login .login-form input{color:#182A3A}
+
+/* ============ Financeiro ============ */
+.fin-head{align-items:flex-end}
+.fin-mes{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sec{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--a-border);color:var(--a-text);border-radius:8px;padding:8px 12px;font:700 13.5px/1.2 var(--font);cursor:pointer;text-decoration:none}
+.btn-sec:hover{border-color:#B89452;text-decoration:none}
+.btn-link{background:none;border:0;color:var(--a-text-muted);font:600 13px var(--font);text-decoration:underline;cursor:pointer;padding:0}
+.valor-entrada{color:#1E7A46}
+.valor-saida{color:#B3261E}
+.kpi-alerta .valor-entrada,.kpi-alerta .valor-saida{color:#B89452}
+.fin-form{display:grid;gap:12px}
+.fin-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+.fin-tipo{display:flex;gap:8px}
+.fin-tipo label{flex:1;flex-direction:row;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--a-border);border-radius:10px;padding:10px;cursor:pointer;font-size:14px}
+.fin-tipo label:has(input:checked){border-color:#182A3A;background:#182A3A;color:#fff}
+.fin-tipo input{accent-color:#B89452}
+.fin-linha{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fin-linha-4{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.fin-check{flex-direction:row !important;align-items:center;font-weight:600 !important}
+.fin-check input{width:18px;height:18px;accent-color:#182A3A}
+.fin-tabela table{width:100%;border-collapse:collapse;font-size:14px}
+.fin-tabela th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--a-text-muted);padding:8px 10px;border-bottom:1px solid var(--a-border)}
+.fin-tabela td{padding:10px;border-bottom:1px solid var(--a-border);vertical-align:middle}
+.fin-tabela tr:last-child td{border-bottom:0}
+.fin-sub{margin-top:24px !important}
+.fin-cat-linha{display:grid;grid-template-columns:130px 1fr 110px;gap:12px;align-items:center;font-size:14px;font-weight:600}
+.fin-cat-valor{text-align:right;font-weight:800}
+.fin-lista{margin-top:16px}
+.fin-pendente td{background:#FFF8EC}
+.fin-situacao{border:1.5px solid #E8C98F;background:#FFF3DC;color:#8C6D2D;border-radius:999px;padding:4px 10px;font:700 12px var(--font);cursor:pointer;white-space:nowrap}
+.fin-situacao.is-ok{border-color:#BFE3CC;background:#E9F7EF;color:#1E7A46}
+.fin-config-grade{display:grid;gap:16px;margin-top:16px}
+@media (min-width:900px){.fin-config-grade{grid-template-columns:1fr 1fr}}
+.fin-renomear{display:flex;gap:8px;align-items:center}
+.fin-renomear input[type=text]{flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--a-border);border-radius:8px;font:600 14px var(--font);color:var(--a-text);background:#fff}
+.painel-card>.fin-renomear:first-child input{font:800 17px Sora,var(--font)}
+.fin-config-tipo{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--a-text-muted);margin:18px 0 8px}
+.fin-cats{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.fin-cats li{display:flex;gap:6px;align-items:center}
+.fin-cats li .fin-renomear{flex:1}
+.fin-nova-cat input{background:#FBF8F2 !important}
+.fin-inativa{opacity:.5}
+.fin-ativar{margin-top:16px}
+.fin-fixa-form{margin:12px 0 16px}
+.fin-fixa-acoes{display:flex;align-items:center;gap:8px}
+.muted{color:var(--a-text-muted);font-size:14px}
+@media (max-width:600px){.fin-cat-linha{grid-template-columns:100px 1fr 90px}.fin-tabela{overflow-x:auto}.fin-tabela table{min-width:560px}.fin-linha{grid-template-columns:1fr}}
+.painel-grade>*,.fin-config-grade>*{min-width:0}
+.fin-form select,.fin-form input{width:100%;max-width:100%;min-width:0}
+.fin-head~.kpis .kpi strong{font-size:clamp(22px,2.2vw,30px);white-space:nowrap}
+.fin-tipo input,.fin-check input{width:auto !important;flex:none}

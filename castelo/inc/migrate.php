@@ -34,3 +34,84 @@ function destrava_migrate(PDO $pdo): void {
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
     );
 }
+
+/** Tabelas do Financeiro do Castelo. Cria e preenche o básico só na primeira vez. */
+function castelo_migrate_financeiro(PDO $pdo): void {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS fin_carteiras (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome VARCHAR(60) NOT NULL,
+        ordem INT NOT NULL DEFAULT 0,
+        ativa TINYINT(1) NOT NULL DEFAULT 1
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS fin_categorias (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        carteira_id INT NOT NULL,
+        tipo ENUM('entrada','saida') NOT NULL,
+        nome VARCHAR(60) NOT NULL,
+        ativa TINYINT(1) NOT NULL DEFAULT 1,
+        INDEX idx_cart (carteira_id, tipo),
+        CONSTRAINT fk_fin_cat_cart FOREIGN KEY (carteira_id) REFERENCES fin_carteiras(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS fin_recorrentes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        carteira_id INT NOT NULL,
+        categoria_id INT NULL,
+        tipo ENUM('entrada','saida') NOT NULL,
+        descricao VARCHAR(120) NOT NULL,
+        valor DECIMAL(12,2) NOT NULL,
+        dia TINYINT NOT NULL DEFAULT 10,
+        ativo TINYINT(1) NOT NULL DEFAULT 1,
+        ultimo_mes CHAR(7) NULL,
+        CONSTRAINT fk_fin_rec_cart FOREIGN KEY (carteira_id) REFERENCES fin_carteiras(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS fin_lancamentos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        carteira_id INT NOT NULL,
+        categoria_id INT NULL,
+        tipo ENUM('entrada','saida') NOT NULL,
+        descricao VARCHAR(120) NOT NULL,
+        valor DECIMAL(12,2) NOT NULL,
+        data DATE NOT NULL,
+        pago TINYINT(1) NOT NULL DEFAULT 1,
+        recorrente_id INT NULL,
+        criado_por VARCHAR(40) NOT NULL DEFAULT '',
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_data (data),
+        INDEX idx_cart_data (carteira_id, data),
+        CONSTRAINT fk_fin_lanc_cart FOREIGN KEY (carteira_id) REFERENCES fin_carteiras(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    if ((int) $pdo->query('SELECT COUNT(*) FROM fin_carteiras')->fetchColumn() === 0) {
+        // Lista inicial: tudo editável pelo próprio Castelo (Financeiro > Configurar).
+        $base = [
+            'Casa' => [
+                'entrada' => ['Retirada dos MEIs', 'Outras entradas'],
+                'saida' => ['Mercado', 'Contas da casa', 'Filhos', 'Saúde', 'Transporte', 'Lazer', 'Parcelas', 'Outros'],
+            ],
+            'MEI Felipe (Destrava)' => [
+                'entrada' => ['Clientes', 'Outras entradas'],
+                'saida' => ['DAS', 'Ferramentas e assinaturas', 'Anúncios', 'Retirada para a Casa', 'Outros'],
+            ],
+            'MEI Nadine' => [
+                'entrada' => ['Vendas', 'Outras entradas'],
+                'saida' => ['DAS', 'Ferramentas e assinaturas', 'Retirada para a Casa', 'Outros'],
+            ],
+            'Pede Coxinha' => [
+                'entrada' => ['Vendas no balcão', 'Encomendas', 'Delivery'],
+                'saida' => ['Insumos', 'Funcionários', 'Aluguel e contas', 'Taxas de app e maquininha', 'Impostos', 'Outros'],
+            ],
+        ];
+        $insC = $pdo->prepare('INSERT INTO fin_carteiras (nome, ordem) VALUES (:n, :o)');
+        $insK = $pdo->prepare('INSERT INTO fin_categorias (carteira_id, tipo, nome) VALUES (:c, :t, :n)');
+        $ordem = 0;
+        foreach ($base as $nome => $tipos) {
+            $insC->execute(['n' => $nome, 'o' => ++$ordem]);
+            $cid = (int) $pdo->lastInsertId();
+            foreach ($tipos as $tipo => $cats) {
+                foreach ($cats as $cat) {
+                    $insK->execute(['c' => $cid, 't' => $tipo, 'n' => $cat]);
+                }
+            }
+        }
+    }
+}

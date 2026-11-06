@@ -34,6 +34,10 @@ function destrava_admin_require_login(): void {
         destrava_migrate(destrava_db());
         $_SESSION['crm_migrated_v1'] = 1;
     }
+    if (empty($_SESSION['fin_migrated_v1'])) {
+        castelo_migrate_financeiro(destrava_db());
+        $_SESSION['fin_migrated_v1'] = 1;
+    }
 }
 
 function h($value): string {
@@ -64,6 +68,24 @@ function destrava_admin_attempt_login(string $username, string $password): bool 
         return true;
     }
     return false;
+}
+
+/** Converte "1.234,56", "1234.56" ou "1234" em número. Devolve null se não for valor válido. */
+function castelo_valor($v): ?float {
+    $v = trim((string) $v);
+    $v = str_replace(['R$', ' '], '', $v);
+    if (preg_match('/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/', $v) || preg_match('/^\d+(,\d{1,2})?$/', $v)) {
+        $v = str_replace(['.', ','], ['', '.'], $v);
+    } elseif (!preg_match('/^\d+(\.\d{1,2})?$/', $v)) {
+        return null;
+    }
+    $n = (float) $v;
+    return ($n > 0 && $n < 100000000) ? round($n, 2) : null;
+}
+
+/** Formata número como dinheiro: R$ 1.234,56 */
+function castelo_reais(float $v): string {
+    return 'R$ ' . number_format($v, 2, ',', '.');
 }
 
 /** Id do usuário cuja senha foi zerada no banco (password_hash vazio), ou 0. */

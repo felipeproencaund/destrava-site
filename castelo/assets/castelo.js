@@ -11,3 +11,22 @@ document.addEventListener('click', function (e) {
   }
 });
 document.querySelectorAll('[data-pct]').forEach(function (el) { el.style.width = el.getAttribute('data-pct') + '%'; });
+/* Financeiro: mostra só as categorias da carteira e do tipo escolhidos */
+document.querySelectorAll('[data-fin-form]').forEach(function (form) {
+  var cart = form.querySelector('[data-fin-carteira]'), cat = form.querySelector('[data-fin-categoria]');
+  if (!cart || !cat) return;
+  var opts = Array.prototype.slice.call(cat.options);
+  function filtra() {
+    var tipo = (form.querySelector('input[name=tipo]:checked') || {}).value || 'saida';
+    var primeira = null;
+    opts.forEach(function (o) {
+      var ok = o.getAttribute('data-carteira') === cart.value && o.getAttribute('data-tipo') === tipo;
+      o.hidden = !ok; o.disabled = !ok;
+      if (ok && !primeira) primeira = o;
+    });
+    if (!cat.selectedOptions.length || cat.selectedOptions[0].disabled) { cat.value = primeira ? primeira.value : ''; }
+  }
+  cart.addEventListener('change', filtra);
+  form.querySelectorAll('input[name=tipo]').forEach(function (r) { r.addEventListener('change', filtra); });
+  filtra();
+});

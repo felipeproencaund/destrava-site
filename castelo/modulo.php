@@ -9,6 +9,10 @@ $modulos = [
     'planejamento' => ['Planejamento de marketing', 'Estudo do cliente, concorrência, canais, verba e metas dos próximos 90 dias.'],
 ];
 $m = $_GET['m'] ?? '';
+if ($m === 'financeiro') {
+    header('Location: financeiro.php');
+    exit;
+}
 if (!isset($modulos[$m])) {
     header('Location: index.php');
     exit;

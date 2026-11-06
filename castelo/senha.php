@@ -33,6 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = ['success', 'Usuário alterado. No próximo login, entre com "' . $novo . '".'];
             }
         }
+    } elseif ($acao === 'criar_usuario') {
+        $novo = strtolower(trim((string) ($_POST['novo_usuario'] ?? '')));
+        $existe = $pdo->prepare('SELECT COUNT(*) FROM admin_users WHERE username = :u');
+        $existe->execute(['u' => $novo]);
+        if (!preg_match('/^[a-z0-9._-]{3,40}$/', $novo)) {
+            $msg = ['error', 'Use de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado.'];
+        } elseif ((int) $existe->fetchColumn() > 0) {
+            $msg = ['error', 'Esse nome de usuário já existe.'];
+        } else {
+            $pdo->prepare("INSERT INTO admin_users (username, password_hash) VALUES (:u, '')")->execute(['u' => $novo]);
+            $msg = ['success', 'Usuário "' . $novo . '" criado. No primeiro acesso, a pessoa entra com esse usuário e cria a própria senha.'];
+        }
     } elseif ($acao === 'excluir') {
         $alvo = (int) ($_POST['id'] ?? 0);
         if ($alvo > 0 && $alvo !== (int) $_SESSION['admin_user_id']) {
@@ -87,7 +99,7 @@ destrava_admin_head('Minha conta', 'senha');
 </div>
 
 <section class="painel-card conta-usuarios">
-  <h2>Outros usuários com acesso</h2>
+  <h2>Usuários com acesso</h2>
   <?php if (!$outros): ?>
     <p class="empty-state">Só você tem acesso ao Castelo.</p>
   <?php else: ?>
@@ -106,5 +118,14 @@ destrava_admin_head('Minha conta', 'senha');
       <?php endforeach; ?>
     </ul>
   <?php endif; ?>
+  <h2 class="fin-sub">Adicionar usuário</h2>
+  <p class="muted">A pessoa entra com o usuário e qualquer coisa na senha, e o Castelo pede pra ela criar a senha dela. Crie e avise na hora, pra ninguém usar antes.</p>
+  <form method="post" class="form-excluir">
+    <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+    <input type="hidden" name="acao" value="criar_usuario">
+    <input type="text" name="novo_usuario" placeholder="ex.: nadine" pattern="[a-z0-9._\-]{3,40}" maxlength="40" required>
+    <input type="password" name="atual" placeholder="Sua senha" autocomplete="current-password" required>
+    <button type="submit" class="btn-primary">Criar usuário</button>
+  </form>
 </section>
 <?php destrava_admin_foot();

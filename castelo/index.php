@@ -115,8 +115,7 @@ destrava_admin_head('Início', 'inicio');
   <section class="painel-card painel-modulos">
     <h2>Em construção</h2>
     <ul class="lista-simples">
-      <li><a href="modulo.php?m=financeiro"><strong>Financeiro</strong><span>Entradas, saídas e lucro por empresa</span></a></li>
-      <li><a href="modulo.php?m=contratos"><strong>Contratos</strong><span>Gerar e assinar online</span></a></li>
+            <li><a href="modulo.php?m=contratos"><strong>Contratos</strong><span>Gerar e assinar online</span></a></li>
       <li><a href="modulo.php?m=planejamento"><strong>Planejamento</strong><span>Plano de marketing de 90 dias</span></a></li>
     </ul>
   </section>
