@@ -147,6 +147,7 @@ destrava_admin_head('Financeiro', 'financeiro');
   <div class="fin-mes">
     <a class="btn-sec" href="financeiro.php?<?= h(http_build_query(['mes' => $ant, 'c' => $c ?: null])) ?>">← <?= h($meses[(int) substr($ant, 5, 2) - 1]) ?></a>
     <a class="btn-sec" href="financeiro.php?<?= h(http_build_query(['mes' => $prox, 'c' => $c ?: null])) ?>"><?= h($meses[(int) substr($prox, 5, 2) - 1]) ?> →</a>
+    <a class="btn-sec btn-meta" href="metas.php?mes=<?= h($mes) ?>">Metas e lucro</a>
     <a class="btn-sec" href="fin-config.php">Configurar</a>
   </div>
 </div>

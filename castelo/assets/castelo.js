@@ -34,3 +34,6 @@ document.querySelectorAll('[data-fin-form]').forEach(function (form) {
 document.querySelectorAll('[data-envia-sozinho]').forEach(function (i) {
   i.addEventListener('change', function () { if (i.files.length) i.form.submit(); });
 });
+document.querySelectorAll('[data-envia-sozinho-select]').forEach(function (s) {
+  s.addEventListener('change', function () { s.form.submit(); });
+});

@@ -120,4 +120,22 @@ function castelo_migrate_financeiro(PDO $pdo): void {
             }
         }
     }
+    // metas e lucro: natureza de cada categoria e dados de funcionamento de cada carteira
+    $col = function (string $t, string $c) use ($pdo): bool {
+        $q = $pdo->prepare('SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :t AND COLUMN_NAME = :c');
+        $q->execute(['t' => $t, 'c' => $c]);
+        return (int) $q->fetchColumn() > 0;
+    };
+    if (!$col('fin_categorias', 'natureza')) {
+        $pdo->exec("ALTER TABLE fin_categorias ADD COLUMN natureza ENUM('fixo','variavel','retirada','outro') NOT NULL DEFAULT 'outro'");
+        $pdo->exec("UPDATE fin_categorias SET natureza = 'variavel' WHERE tipo = 'saida' AND nome IN ('Insumos', 'Taxas de app e maquininha', 'Impostos')");
+        $pdo->exec("UPDATE fin_categorias SET natureza = 'fixo' WHERE tipo = 'saida' AND nome IN ('Funcionários', 'Aluguel e contas', 'DAS', 'Ferramentas e assinaturas', 'Anúncios')");
+        $pdo->exec("UPDATE fin_categorias SET natureza = 'retirada' WHERE tipo = 'saida' AND nome LIKE 'Retirada%'");
+    }
+    if (!$col('fin_carteiras', 'empresa')) {
+        $pdo->exec("ALTER TABLE fin_carteiras ADD COLUMN empresa TINYINT(1) NOT NULL DEFAULT 1, ADD COLUMN dias CHAR(7) NOT NULL DEFAULT '1111110', ADD COLUMN cmv_estimado DECIMAL(5,2) NOT NULL DEFAULT 35.00");
+        $pdo->exec("UPDATE fin_carteiras SET empresa = 0 WHERE nome = 'Casa'");
+        $pdo->exec("UPDATE fin_carteiras SET dias = '1111100', cmv_estimado = 10 WHERE nome LIKE 'MEI%'");
+    }
+
 }

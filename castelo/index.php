@@ -2,6 +2,7 @@
 /** Castelo: tela inicial (Intersect) com os números do mês e os próximos retornos. */
 require_once __DIR__ . '/inc/auth.php';
 require_once __DIR__ . '/inc/layout.php';
+require_once __DIR__ . '/inc/fin.php';
 destrava_admin_require_login();
 $pdo = destrava_db();
 
@@ -23,6 +24,14 @@ $proximos = $pdo->query("SELECT id, nome, empresa, whatsapp, status, proximo_con
     ORDER BY proximo_contato ASC LIMIT 6")->fetchAll();
 $ultimos = $pdo->query('SELECT id, nome, empresa, diagnostico_principal, origem, created_at FROM leads ORDER BY created_at DESC LIMIT 5')->fetchAll();
 
+$metasHoje = [];
+try {
+    foreach ($pdo->query('SELECT * FROM fin_carteiras WHERE ativa = 1 AND empresa = 1 ORDER BY ordem, id')->fetchAll() as $k) {
+        $metasHoje[] = [$k, castelo_resultado($pdo, $k, date('Y-m'))];
+    }
+} catch (Throwable $e) {
+    $metasHoje = [];
+}
 $hoje = date('Y-m-d');
 $meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 $mesNome = $meses[(int) date('n') - 1];
@@ -63,6 +72,27 @@ destrava_admin_head('Início', 'inicio');
     <span class="kpi-nota">desde o início</span>
   </a>
 </section>
+
+<?php if ($metasHoje): ?>
+<section class="metas-hoje">
+  <?php foreach ($metasHoje as [$k, $r]): ?>
+    <a class="meta-mini" href="metas.php?c=<?= (int) $k['id'] ?>">
+      <span class="kpi-rotulo"><?= h($k['nome']) ?></span>
+      <?php if ($r['falta'] > 0 && $r['dias_rest'] > 0): ?>
+        <strong><?= castelo_reais($r['meta_dia']) ?></strong>
+        <span class="kpi-nota">por dia pra pagar as contas · hoje: <?= castelo_reais($r['hoje']) ?></span>
+      <?php elseif ($r['pe'] > 0): ?>
+        <strong class="valor-entrada">Contas cobertas</strong>
+        <span class="kpi-nota">lucro do mês: <?= castelo_reais($r['lucro']) ?></span>
+      <?php else: ?>
+        <strong>—</strong>
+        <span class="kpi-nota">lance as contas do mês pra calcular a meta</span>
+      <?php endif; ?>
+      <span class="meta-barra"><span data-pct="<?= round($r['progresso'] * 100) ?>"></span></span>
+    </a>
+  <?php endforeach; ?>
+</section>
+<?php endif; ?>
 
 <div class="painel-grade">
   <section class="painel-card">

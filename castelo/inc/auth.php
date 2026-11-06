@@ -34,9 +34,9 @@ function destrava_admin_require_login(): void {
         destrava_migrate(destrava_db());
         $_SESSION['crm_migrated_v1'] = 1;
     }
-    if (empty($_SESSION['fin_migrated_v2'])) {
+    if (empty($_SESSION['fin_migrated_v3'])) {
         castelo_migrate_financeiro(destrava_db());
-        $_SESSION['fin_migrated_v2'] = 1;
+        $_SESSION['fin_migrated_v3'] = 1;
     }
 }
 

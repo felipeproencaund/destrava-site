@@ -38,6 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($acao === 'categoria_ativa') {
             $pdo->prepare('UPDATE fin_categorias SET ativa = 1 - ativa WHERE id = :id')->execute(['id' => $id]);
             $msg = ['success', 'Categoria atualizada.'];
+        } elseif ($acao === 'categoria_natureza') {
+            $nat = in_array($_POST['natureza'] ?? '', ['fixo', 'variavel', 'retirada', 'outro'], true) ? $_POST['natureza'] : 'outro';
+            $pdo->prepare('UPDATE fin_categorias SET natureza = :n WHERE id = :id')->execute(['n' => $nat, 'id' => $id]);
+            $msg = ['success', 'Tipo de custo atualizado.'];
+        } elseif ($acao === 'carteira_operacao') {
+            $dias = '';
+            for ($d = 1; $d <= 7; $d++) {
+                $dias .= !empty($_POST['dia' . $d]) ? '1' : '0';
+            }
+            $cmv = str_replace(',', '.', (string) ($_POST['cmv_estimado'] ?? '35'));
+            $cmv = is_numeric($cmv) ? max(0, min(95, (float) $cmv)) : 35;
+            $pdo->prepare('UPDATE fin_carteiras SET empresa = :e, dias = :d, cmv_estimado = :c WHERE id = :id')
+                ->execute(['e' => !empty($_POST['empresa']) ? 1 : 0, 'd' => $dias === '0000000' ? '1111110' : $dias, 'c' => $cmv, 'id' => $id]);
+            $msg = ['success', 'Funcionamento da carteira salvo.'];
         } elseif ($acao === 'fixa_nova' && $cartOk) {
             $desc = destrava_sanitize_str($_POST['descricao'] ?? '', 120);
             $valor = castelo_valor($_POST['valor'] ?? '');
@@ -118,6 +132,19 @@ destrava_admin_head('Configurar financeiro', 'financeiro');
         <input type="text" name="nome" value="<?= h($k['nome']) ?>" maxlength="60" aria-label="Nome da carteira" required>
         <button type="submit" class="btn-sec">Renomear</button>
       </form>
+      <form method="post" class="fin-operacao">
+        <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+        <input type="hidden" name="acao" value="carteira_operacao">
+        <input type="hidden" name="id" value="<?= $kid ?>">
+        <label class="fin-check"><input type="checkbox" name="empresa" value="1" <?= !empty($k['empresa']) ? 'checked' : '' ?>> É empresa (entra em Metas e lucro)</label>
+        <div class="fin-dias" aria-label="Dias de funcionamento">
+          <?php foreach (['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'] as $di => $dn): ?>
+            <label><input type="checkbox" name="dia<?= $di + 1 ?>" value="1" <?= (($k['dias'] ?? '1111110')[$di] ?? '0') === '1' ? 'checked' : '' ?>><span><?= $dn ?></span></label>
+          <?php endforeach; ?>
+        </div>
+        <label class="fin-cmv">CMV estimado (%), usado enquanto não há vendas lançadas<input type="text" name="cmv_estimado" inputmode="decimal" value="<?= h(rtrim(rtrim(number_format((float) ($k['cmv_estimado'] ?? 35), 2, ',', ''), '0'), ',')) ?>"></label>
+        <button type="submit" class="btn-sec">Salvar funcionamento</button>
+      </form>
       <?php foreach (['entrada' => 'Entradas', 'saida' => 'Saídas'] as $tp => $rot): ?>
         <h3 class="fin-config-tipo"><?= $rot ?></h3>
         <ul class="fin-cats">
@@ -130,6 +157,18 @@ destrava_admin_head('Configurar financeiro', 'financeiro');
                 <input type="text" name="nome" value="<?= h($g['nome']) ?>" maxlength="60" aria-label="Nome da categoria" required>
                 <button type="submit" class="btn-sec" title="Salvar nome">Salvar</button>
               </form>
+              <?php if ($tp === 'saida'): ?>
+              <form method="post" class="fin-natureza">
+                <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
+                <input type="hidden" name="acao" value="categoria_natureza">
+                <input type="hidden" name="id" value="<?= (int) $g['id'] ?>">
+                <select name="natureza" aria-label="Tipo de custo" data-envia-sozinho-select>
+                  <?php foreach (['fixo' => 'Custo fixo', 'variavel' => 'Variável (CMV)', 'retirada' => 'Retirada', 'outro' => 'Outro'] as $nv => $nl): ?>
+                    <option value="<?= $nv ?>" <?= ($g['natureza'] ?? 'outro') === $nv ? 'selected' : '' ?>><?= $nl ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </form>
+              <?php endif; ?>
               <form method="post">
                 <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
                 <input type="hidden" name="acao" value="categoria_ativa">
