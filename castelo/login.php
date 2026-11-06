@@ -46,13 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Entrar | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=1">
+<link rel="stylesheet" href="assets/castelo.css?v=2">
 </head>
 <body class="castelo-login">
   <div class="login-card">
     <img class="login-logo" src="assets/logo-claro.webp" alt="Destrava Business" width="160" height="44">
-    <p class="login-kicker">Castelo</p>
-    <h1>Área interna do Grupo Undertake</h1>
     <?php if ($error): ?>
       <p class="login-error"><?= htmlspecialchars($error, ENT_QUOTES) ?></p>
     <?php endif; ?>
