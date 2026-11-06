@@ -321,3 +321,4 @@ img{display:block;max-width:100%}
 .fundador-lista strong{display:block;font-family:var(--fd);font-size:15px;color:var(--azul)}
 .fundador-lista span{display:block;font-size:14px;color:var(--suave);margin-top:2px}
 @media (min-width:900px){.fase-card .fase-recebe{min-height:98px}}
+@media (min-width:900px){.fase{gap:30px}}
