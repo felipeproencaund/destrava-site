@@ -55,13 +55,13 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 - Usa o mesmo banco e o mesmo config do quiz: `castelo/inc/auth.php` lê `diagnostico/php/config.php`.
 - Telas: Início (Intersect), CRM (leads.php, lead.php, novo.php), Erros, Trocar senha. Financeiro, Contratos e Planejamento aparecem como "em breve" (modulo.php).
 - Sem script dentro do HTML (CSP): confirmações usam `data-confirm` e o JS fica em `castelo/assets/castelo.js`.
-- O antigo diagnostico/admin redireciona para o Castelo (desde 06/11/2026). Os arquivos antigos ficam no servidor, mas não abrem.
+- diagnostico/admin NÃO redireciona para o Castelo: vai virar a área de entender os diagnósticos e acompanhar os planos de marketing (decisão do Felipe em 06/11/2026).
 
 ## Acessos (endereços e usuários; senha nunca fica aqui)
 - Site: https://vempradestrava.com.br (pasta raiz do repositório = public_html)
 - Quiz do diagnóstico: https://diagnostico.vempradestrava.com.br (pasta `diagnostico/`)
 - Castelo (área interna): https://castelo.vempradestrava.com.br (pasta `castelo/`). Usuário do Felipe: `felipeproenca`. Usuários se criam em Minha conta; a pessoa cria a própria senha no primeiro acesso.
-- Antigo admin do CRM: https://diagnostico.vempradestrava.com.br/admin redireciona para o Castelo.
+- Admin do diagnóstico: https://diagnostico.vempradestrava.com.br/admin (futura área de diagnósticos e planos de marketing).
 - Repositório: https://github.com/felipeproencaund/destrava-site (deixar privado). Publicação automática pelo GitHub Actions (FTP).
 - Hostinger: https://hpanel.hostinger.com, site vempradestrava.com.br, plano Single Web Hosting. DNS na própria Hostinger (dns-parking).
 - Subdomínios: https://hpanel.hostinger.com/websites/vempradestrava.com.br/domains/subdomains
