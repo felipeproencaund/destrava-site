@@ -123,14 +123,22 @@ $caindo = array_filter($prod, function ($r) use ($prodA) {
 usort($caindo, function ($a, $b) use ($prodA) {
     return ($a['q'] / $prodA[$a['produto']]) <=> ($b['q'] / $prodA[$b['produto']]);
 });
-$poucos = array_filter($prod, function ($r) use ($novo, $sem) {
-    return $r['q'] / $sem < 1 && !$novo($r['produto']) && $r['categoria'] !== 'cento';
+// Fora da lista de "vendem pouco": centos, combos e lanches gourmet (linha de hambúrguer)
+$foraPoucos = function (array $r): bool {
+    return in_array($r['categoria'], ['cento', 'hambúrguer'], true)
+        || preg_match('/combo|burger|is life|classic|rogers|bufalo|costela prime/i', $r['produto']);
+};
+$poucos = array_values(array_filter($prod, function ($r) use ($novo, $sem, $foraPoucos) {
+    return $r['q'] / $sem < 1 && !$novo($r['produto']) && !$foraPoucos($r);
+}));
+usort($poucos, function ($a, $b) {
+    return $a['q'] <=> $b['q'];
 });
 $novidades = array_filter($prod, function ($r) use ($novo) {
     return $novo($r['produto']);
 });
 $batatas = array_values(array_filter($prod, function ($r) {
-    return $r['categoria'] === 'batata recheada';
+    return $r['categoria'] === 'batata recheada' && !preg_match('/simples|palha/i', $r['produto']);
 }));
 
 // Clientes
@@ -261,25 +269,25 @@ $wa = function (string $f): string {
   <section class="painel-card">
     <h2>Caindo</h2>
     <p class="muted">Venderam 20% menos que no período anterior.</p>
-    <ul class="lista-simples">
-      <?php foreach (array_slice($caindo, 0, 10) as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= $var((float) $r['q'], $prodA[$r['produto']]) ?></strong></li><?php endforeach; ?>
+    <ul class="lista-simples an-rolagem">
+      <?php foreach ($caindo as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= $var((float) $r['q'], $prodA[$r['produto']]) ?></strong></li><?php endforeach; ?>
       <?php if (!$caindo): ?><li><span class="muted"><?= $temAnt ? 'Nenhum produto caiu mais de 20%.' : 'Sem período anterior pra comparar.' ?></span></li><?php endif; ?>
     </ul>
   </section>
   <section class="painel-card">
     <h2>Novidades e retornos</h2>
     <p class="muted">Começaram a vender há menos de 60 dias, ou voltaram depois de 60 dias parados. Acompanhar, não cortar.</p>
-    <ul class="lista-simples">
-      <?php foreach (array_slice($novidades, 0, 14) as $r): ?><li><span><?= h($r['produto']) ?><?= isset($voltou[$r['produto']]) ? ' <span class="an-novo">voltou</span>' : '' ?></span><strong><?= castelo_num((float) $r['q']) ?> un.</strong></li><?php endforeach; ?>
+    <ul class="lista-simples an-rolagem">
+      <?php foreach ($novidades as $r): ?><li><span><?= h($r['produto']) ?><?= isset($voltou[$r['produto']]) ? ' <span class="an-novo">voltou</span>' : '' ?></span><strong><?= castelo_num((float) $r['q']) ?> un.</strong></li><?php endforeach; ?>
       <?php if (!$novidades): ?><li><span class="muted">Nenhum produto novo.</span></li><?php endif; ?>
     </ul>
   </section>
   <section class="painel-card">
     <h2>Vendem pouco</h2>
-    <p class="muted">Menos de 1 por semana, vendendo há mais de 60 dias sem parar.</p>
-    <ul class="lista-simples">
-      <?php foreach (array_slice($poucos, 0, 12) as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= castelo_num((float) $r['q']) ?> un.</strong></li><?php endforeach; ?>
-      <?php if (count($poucos) > 12): ?><li><span class="muted">e mais <?= count($poucos) - 12 ?> produtos</span></li><?php endif; ?>
+    <p class="muted">Menos de 1 por semana, vendendo há mais de 60 dias sem parar. Sem combos e lanches gourmet. <?= count($poucos) ?> produtos.</p>
+    <ul class="lista-simples an-rolagem">
+      <?php foreach ($poucos as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= castelo_num((float) $r['q']) ?> un.</strong></li><?php endforeach; ?>
+      <?php if (!$poucos): ?><li><span class="muted">Nenhum produto.</span></li><?php endif; ?>
     </ul>
   </section>
 </div>

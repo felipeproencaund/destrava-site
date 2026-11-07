@@ -601,3 +601,7 @@ a.an-empresa:hover{border-color:var(--a-gold,#C9A45C);transform:translateY(-2px)
 .an-periodo .kpi-rotulo{width:100%}
 .an-periodo label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--a-text-muted)}
 .an-periodo input[type=date]{min-width:150px}
+.an-rolagem{max-height:440px;overflow-y:auto;padding-right:6px;scrollbar-width:thin;scrollbar-color:rgb(201 164 92 / .5) transparent}
+.an-rolagem::-webkit-scrollbar{width:6px}
+.an-rolagem::-webkit-scrollbar-thumb{background:rgb(201 164 92 / .5);border-radius:6px}
+.fin-grafico .g-valor{fill:#E8EEF4;font:700 11px Manrope,sans-serif}

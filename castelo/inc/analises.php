@@ -123,45 +123,65 @@ function castelo_num(float $v, int $casas = 0): string {
     return number_format($v, $casas, ',', '.');
 }
 
+/** Valor curto pra rótulo de gráfico: 42,5 mil / 850 / R$ 42,5 mil. */
+function castelo_curto(float $v, string $fmt): string {
+    $pre = $fmt === 'reais' ? 'R$ ' : '';
+    if (abs($v) >= 1000) {
+        return $pre . number_format($v / 1000, $v >= 100000 ? 0 : 1, ',', '.') . ' mil';
+    }
+    return $pre . number_format($v, 0, ',', '.');
+}
+
 /**
- * Gráfico de barras simples (uma ou duas séries empilhadas).
+ * Gráfico de barras com o valor escrito em cada barra (uma ou duas séries empilhadas).
  * $dados: [rótulo => [valor1, valor2]] ou [rótulo => valor].
  */
 function castelo_svg_barras(array $dados, array $op = []): string {
-    $w = $op['largura'] ?? 760; $h = $op['altura'] ?? 220; $pad = 30; $n = max(1, count($dados));
+    $w = $op['largura'] ?? 760; $n = max(1, count($dados));
     $fmt = $op['formato'] ?? 'num';
-    $f = function (float $v) use ($fmt): string {
-        return $fmt === 'reais' ? castelo_reais($v) : castelo_num($v);
-    };
+    $padL = 12; $padB = 30;
+    $bw = ($w - $padL * 2) / $n;
+    $deitado = $bw < 50;
+    $padT = $deitado ? 70 : 26;
+    $h = ($op['altura'] ?? 220) + ($deitado ? 40 : 0);
     $tot = [];
     foreach ($dados as $k => $v) {
         $tot[$k] = is_array($v) ? array_sum($v) : (float) $v;
     }
     $max = max(1, ...array_values($tot));
-    $bw = ($w - $pad * 2) / $n;
     $cores = ['url(#gan)', '#5FD39A'];
     $svg = '<svg class="fin-grafico" viewBox="0 0 ' . $w . ' ' . $h . '" role="img" aria-label="' . htmlspecialchars($op['titulo'] ?? 'Gráfico', ENT_QUOTES) . '">';
     $svg .= '<defs><linearGradient id="gan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3C27F"/><stop offset="1" stop-color="#8C6D2D"/></linearGradient></defs>';
     $i = 0;
     $passo = max(1, (int) ceil($n / 14));
+    $alt = $h - $padT - $padB;
     foreach ($dados as $rot => $v) {
         $vals = is_array($v) ? array_values($v) : [(float) $v];
-        $x = $pad + $i * $bw + $bw * 0.15;
-        $base = $h - $pad;
-        foreach ($vals as $s => $val) {
-            $bh = $val > 0 ? max(1.5, ($h - $pad * 2) * $val / $max) : 0;
+        $x = $padL + $i * $bw + $bw * 0.15;
+        $cx = round($x + $bw * 0.35, 1);
+        $base = $h - $padB;
+        foreach ($vals as $sIdx => $val) {
+            $bh = $val > 0 ? max(1.5, $alt * $val / $max) : 0;
             if ($bh > 0) {
                 $base -= $bh;
-                $nomeSerie = $op['series'][$s] ?? '';
-                $svg .= '<rect x="' . round($x, 1) . '" y="' . round($base, 1) . '" width="' . round($bw * 0.7, 1) . '" height="' . round($bh, 1) . '" rx="2.5" fill="' . $cores[$s % 2] . '"><title>'
-                    . htmlspecialchars($rot . ($nomeSerie ? ' · ' . $nomeSerie : '') . ': ' . $f($val), ENT_QUOTES) . '</title></rect>';
+                $nomeSerie = $op['series'][$sIdx] ?? '';
+                $svg .= '<rect x="' . round($x, 1) . '" y="' . round($base, 1) . '" width="' . round($bw * 0.7, 1) . '" height="' . round($bh, 1) . '" rx="2.5" fill="' . $cores[$sIdx % 2] . '"><title>'
+                    . htmlspecialchars($rot . ($nomeSerie ? ' · ' . $nomeSerie : '') . ': ' . ($fmt === 'reais' ? castelo_reais($val) : castelo_num($val)), ENT_QUOTES) . '</title></rect>';
+            }
+        }
+        if ($tot[$rot] > 0) {
+            $txt = htmlspecialchars(castelo_curto($tot[$rot], $fmt), ENT_QUOTES);
+            if ($deitado) {
+                $ty = round($base - 6, 1);
+                $svg .= '<text x="' . $cx . '" y="' . $ty . '" transform="rotate(-90 ' . $cx . ' ' . $ty . ')" dy="4" class="g-valor">' . $txt . '</text>';
+            } else {
+                $svg .= '<text x="' . $cx . '" y="' . round($base - 7, 1) . '" text-anchor="middle" class="g-valor">' . $txt . '</text>';
             }
         }
         if ($i % $passo === 0 || $i === $n - 1) {
-            $svg .= '<text x="' . round($x + $bw * 0.35, 1) . '" y="' . ($h - 9) . '" text-anchor="middle" class="g-eixo">' . htmlspecialchars((string) $rot, ENT_QUOTES) . '</text>';
+            $svg .= '<text x="' . $cx . '" y="' . ($h - 9) . '" text-anchor="middle" class="g-eixo">' . htmlspecialchars((string) $rot, ENT_QUOTES) . '</text>';
         }
         $i++;
     }
-    $svg .= '<text x="' . $pad . '" y="' . ($pad - 10) . '" class="g-eixo">máx. ' . htmlspecialchars($f($max), ENT_QUOTES) . '</text>';
     return $svg . '</svg>';
 }
