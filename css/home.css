@@ -307,13 +307,21 @@ img{display:block;max-width:100%}
 /* Quem está por trás da Destrava */
 .fundador{background:var(--marfim)}
 .fundador-in{display:grid;gap:32px;align-items:center}
-@media (min-width:900px){.fundador-in{grid-template-columns:.8fr 1.2fr;gap:64px}}
+.fundador-topo{margin-bottom:-8px}
+@media (min-width:900px){
+  .fundador-in{grid-template-columns:.8fr 1.2fr;grid-template-rows:1fr auto auto 1fr;column-gap:64px;row-gap:0}
+  .fundador-foto{grid-column:1;grid-row:1/-1}
+  .fundador-topo{grid-column:2;grid-row:2;margin:0}
+  .fundador-txt{grid-column:2;grid-row:3}
+}
 .fundador-foto{position:relative;max-width:420px}
 .fundador-foto::before{content:"";position:absolute;inset:16px -16px -16px 16px;border:2px solid var(--ouro);border-radius:22px}
 .fundador-foto img{position:relative;display:block;width:100%;height:auto;border-radius:20px;box-shadow:0 20px 40px rgb(24 42 58 / .18)}
 .fundador-rotulo{color:var(--ouro-txt);font:700 13px/1 var(--ft);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
 .fundador h2{margin:0}
-.fundador-cargo{color:var(--suave);font-weight:600;margin:4px 0 20px}
+.fundador-cargo{color:var(--suave);font-weight:600;margin:4px 0 0}
+.fundador-txt{padding-top:4px}
+@media (min-width:900px){.fundador-txt{padding-top:20px}}
 .fundador-txt>p:not(.fundador-rotulo):not(.fundador-cargo){font-size:17px;line-height:1.6;margin:0 0 14px;max-width:56ch}
 .fundador-lista{list-style:none;padding:0;margin:24px 0 0;display:grid;gap:12px}
 @media (min-width:600px){.fundador-lista{grid-template-columns:repeat(3,1fr)}}
