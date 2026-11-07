@@ -76,6 +76,7 @@ function castelo_importar_pc(PDO $pdo, string $conteudoGz, string $usuario): arr
         $lote('pc_clientes', ['id', 'nome', 'fone', 'bairro'], $cli);
         $lote('pc_pedidos', ['id', 'numero', 'aberto', 'total', 'entrega', 'canal', 'agendado', 'previsto', 'cliente_id', 'escola', 'excluido', 'pagamento'], $ped);
         $lote('pc_itens', ['id', 'pedido_id', 'pai', 'produto', 'categoria', 'qtd', 'valor', 'mini'], $its);
+        castelo_pc_marca_lanches($pdo);
         $info = is_array($d['info'] ?? null) ? $d['info'] : [];
         $st = $pdo->prepare('REPLACE INTO an_info (empresa, chave, valor) VALUES ("pede-coxinha", :c, :v)');
         foreach (['notas_problema', 'ultimo_pedido'] as $k) {

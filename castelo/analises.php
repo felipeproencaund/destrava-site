@@ -11,7 +11,7 @@ $pc = null;
 if ($ult) {
     $fim = date('Y-m-d 23:59:59', strtotime($ult));
     $ini = date('Y-m-d 00:00:00', strtotime($ult . ' -29 days'));
-    $pc = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total),0) v FROM pc_pedidos WHERE excluido = 0 AND aberto BETWEEN :i AND :f', ['i' => $ini, 'f' => $fim])[0];
+    $pc = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total - lanche_valor),0) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f', ['i' => $ini, 'f' => $fim])[0];
 }
 $leads = castelo_q($pdo, 'SELECT COUNT(*) n FROM leads WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)')[0]['n'] ?? 0;
 destrava_admin_head('Análises', 'analises');

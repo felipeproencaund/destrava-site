@@ -47,15 +47,15 @@ $var = function (float $a, float $b) use ($temAnt): string {
 
 // KPIs do período e do anterior
 $kpi = function (array $p) use ($pdo): array {
-    $a = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total),0) v FROM pc_pedidos WHERE excluido = 0 AND aberto BETWEEN :i AND :f', $p)[0];
-    $m = castelo_q($pdo, 'SELECT COALESCE(SUM(it.mini),0) m FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND p.aberto BETWEEN :i AND :f', $p)[0];
+    $a = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total - lanche_valor),0) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f', $p)[0];
+    $m = castelo_q($pdo, 'SELECT COALESCE(SUM(it.mini),0) m FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND NOT ' . castelo_pc_lanche('it.') . ' AND p.aberto BETWEEN :i AND :f', $p)[0];
     return ['n' => (float) $a['n'], 'v' => (float) $a['v'], 'm' => (float) $m['m'], 't' => $a['n'] > 0 ? $a['v'] / $a['n'] : 0];
 };
 $k = $kpi($P);
 $ka = $kpi($PA);
 
 // Faturamento por mês (18 meses)
-$mesesRows = castelo_q($pdo, 'SELECT DATE_FORMAT(aberto, "%Y-%m") m, SUM(total) v FROM pc_pedidos WHERE excluido = 0 AND aberto >= DATE_SUB(:f, INTERVAL 18 MONTH) GROUP BY m ORDER BY m', ['f' => $fim]);
+$mesesRows = castelo_q($pdo, 'SELECT DATE_FORMAT(aberto, "%Y-%m") m, SUM(total - lanche_valor) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto >= DATE_SUB(:f, INTERVAL 18 MONTH) GROUP BY m ORDER BY m', ['f' => $fim]);
 $nm = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 $porMes = [];
 foreach ($mesesRows as $r) {
@@ -84,25 +84,25 @@ $totMini = max(1, array_sum($faixas));
 $encomenda = $totMini - $faixas['Pronta entrega'] - $faixas['Agendado pro mesmo dia'];
 
 // Dias da semana
-$dsRows = castelo_q($pdo, 'SELECT WEEKDAY(aberto) d, SUM(total) v, COUNT(*) n, COUNT(DISTINCT DATE(aberto)) dias FROM pc_pedidos WHERE excluido = 0 AND aberto BETWEEN :i AND :f GROUP BY d ORDER BY d', $P);
+$dsRows = castelo_q($pdo, 'SELECT WEEKDAY(aberto) d, SUM(total - lanche_valor) v, COUNT(*) n, COUNT(DISTINCT DATE(aberto)) dias FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f GROUP BY d ORDER BY d', $P);
 $nd = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
 // Produtos
 $prod = castelo_q($pdo, 'SELECT it.produto, it.categoria, SUM(it.qtd) q, SUM(it.valor) v FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id
-    WHERE p.excluido = 0 AND it.pai = 0 AND p.aberto BETWEEN :i AND :f GROUP BY it.produto, it.categoria ORDER BY v DESC', $P);
+    WHERE p.excluido = 0 AND it.pai = 0 AND NOT ' . castelo_pc_lanche('it.') . ' AND p.aberto BETWEEN :i AND :f GROUP BY it.produto, it.categoria ORDER BY v DESC', $P);
 $prodA = [];
-foreach (castelo_q($pdo, 'SELECT it.produto, SUM(it.qtd) q FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND p.aberto BETWEEN :i AND :f GROUP BY it.produto', $PA) as $r) {
+foreach (castelo_q($pdo, 'SELECT it.produto, SUM(it.qtd) q FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND NOT ' . castelo_pc_lanche('it.') . ' AND p.aberto BETWEEN :i AND :f GROUP BY it.produto', $PA) as $r) {
     $prodA[$r['produto']] = (float) $r['q'];
 }
 $primeira = [];
-foreach (castelo_q($pdo, 'SELECT it.produto, MIN(p.aberto) d FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 GROUP BY it.produto') as $r) {
+foreach (castelo_q($pdo, 'SELECT it.produto, MIN(p.aberto) d FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND NOT ' . castelo_pc_lanche('it.') . ' GROUP BY it.produto') as $r) {
     $primeira[$r['produto']] = $r['d'];
 }
 // Voltaram: venderam nos últimos 60 dias depois de pelo menos 60 dias parados
 $voltou = [];
 foreach (castelo_q($pdo, 'SELECT it.produto, MAX(CASE WHEN p.aberto < DATE_SUB(:f, INTERVAL 60 DAY) THEN p.aberto END) antes,
     MIN(CASE WHEN p.aberto >= DATE_SUB(:f2, INTERVAL 60 DAY) THEN p.aberto END) depois
-    FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND p.aberto <= :f3 GROUP BY it.produto', ['f' => $fim, 'f2' => $fim, 'f3' => $fim]) as $r) {
+    FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND NOT ' . castelo_pc_lanche('it.') . ' AND p.aberto <= :f3 GROUP BY it.produto', ['f' => $fim, 'f2' => $fim, 'f3' => $fim]) as $r) {
     if ($r['antes'] && $r['depois'] && (strtotime($r['depois']) - strtotime($r['antes'])) >= 60 * 86400) {
         $voltou[$r['produto']] = true;
     }
@@ -142,15 +142,15 @@ $batatas = array_values(array_filter($prod, function ($r) {
 }));
 
 // Clientes
-$novosRows = castelo_q($pdo, 'SELECT DATE_FORMAT(pr, "%Y-%m") m, COUNT(*) n FROM (SELECT cliente_id, MIN(aberto) pr FROM pc_pedidos WHERE excluido = 0 AND cliente_id IS NOT NULL GROUP BY cliente_id) x
+$novosRows = castelo_q($pdo, 'SELECT DATE_FORMAT(pr, "%Y-%m") m, COUNT(*) n FROM (SELECT cliente_id, MIN(aberto) pr FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND cliente_id IS NOT NULL GROUP BY cliente_id) x
     WHERE pr >= DATE_SUB(:f, INTERVAL 14 MONTH) GROUP BY m ORDER BY m', ['f' => $fim]);
 $novosMes = [];
 foreach ($novosRows as $r) {
     $novosMes[$nm[(int) substr($r['m'], 5) - 1] . '/' . substr($r['m'], 2, 2)] = (float) $r['n'];
 }
-$cliBase = castelo_q($pdo, 'SELECT c.id, c.nome, c.fone, c.bairro, COUNT(*) n, SUM(p.total) v, MAX(p.aberto) u,
+$cliBase = castelo_q($pdo, 'SELECT c.id, c.nome, c.fone, c.bairro, COUNT(*) n, SUM(p.total - p.lanche_valor) v, MAX(p.aberto) u,
     SUM(EXISTS(SELECT 1 FROM pc_itens it WHERE it.pedido_id = p.id AND it.categoria = "cento" AND it.pai = 0)) centos
-    FROM pc_pedidos p JOIN pc_clientes c ON c.id = p.cliente_id WHERE p.excluido = 0 AND p.aberto <= :f GROUP BY c.id, c.nome, c.fone, c.bairro', ['f' => $fim]);
+    FROM pc_pedidos p JOIN pc_clientes c ON c.id = p.cliente_id WHERE p.excluido = 0 AND p.so_lanche = 0 AND p.aberto <= :f GROUP BY c.id, c.nome, c.fone, c.bairro', ['f' => $fim]);
 $status = ['Ativos (2+ compras, até 60 dias)' => [0, 0], 'Esfriando (61 a 180 dias)' => [0, 0], 'Sumiram (mais de 180 dias)' => [0, 0], 'Novos (1 compra, até 60 dias)' => [0, 0], '1 compra antiga' => [0, 0]];
 $esfriando = [];
 foreach ($cliBase as $c) {
@@ -166,21 +166,21 @@ foreach ($cliBase as $c) {
 usort($esfriando, function ($a, $b) {
     return $b['v'] <=> $a['v'];
 });
-$canais = castelo_q($pdo, 'SELECT canal, COUNT(*) n, SUM(cliente_id IS NOT NULL) c, SUM(total) v FROM pc_pedidos WHERE excluido = 0 AND aberto BETWEEN :i AND :f GROUP BY canal ORDER BY v DESC', $P);
+$canais = castelo_q($pdo, 'SELECT canal, COUNT(*) n, SUM(cliente_id IS NOT NULL) c, SUM(total - lanche_valor) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f GROUP BY canal ORDER BY v DESC', $P);
 
 // Escolas (últimos 12 meses)
-$escolas = castelo_q($pdo, 'SELECT p.escola, COUNT(*) n, SUM(p.total) v, COALESCE(SUM(x.m),0) m, MAX(p.aberto) u FROM pc_pedidos p
+$escolas = castelo_q($pdo, 'SELECT p.escola, COUNT(*) n, SUM(p.total - p.lanche_valor) v, COALESCE(SUM(x.m),0) m, MAX(p.aberto) u FROM pc_pedidos p
     LEFT JOIN (SELECT pedido_id, SUM(mini) m FROM pc_itens WHERE pai = 0 GROUP BY pedido_id) x ON x.pedido_id = p.id
-    WHERE p.excluido = 0 AND p.escola IS NOT NULL AND p.aberto >= DATE_SUB(:f, INTERVAL 12 MONTH) GROUP BY p.escola ORDER BY v DESC', ['f' => $fim]);
+    WHERE p.excluido = 0 AND p.so_lanche = 0 AND p.escola IS NOT NULL AND p.aberto >= DATE_SUB(:f, INTERVAL 12 MONTH) GROUP BY p.escola ORDER BY v DESC', ['f' => $fim]);
 $escMes = [];
 foreach (castelo_q($pdo, 'SELECT DATE_FORMAT(p.aberto, "%Y-%m") mm, COALESCE(SUM(x.m),0) m FROM pc_pedidos p LEFT JOIN (SELECT pedido_id, SUM(mini) m FROM pc_itens WHERE pai = 0 GROUP BY pedido_id) x ON x.pedido_id = p.id
-    WHERE p.excluido = 0 AND p.escola IS NOT NULL AND p.aberto >= DATE_SUB(:f, INTERVAL 14 MONTH) GROUP BY mm ORDER BY mm', ['f' => $fim]) as $r) {
+    WHERE p.excluido = 0 AND p.so_lanche = 0 AND p.escola IS NOT NULL AND p.aberto >= DATE_SUB(:f, INTERVAL 14 MONTH) GROUP BY mm ORDER BY mm', ['f' => $fim]) as $r) {
     $escMes[$nm[(int) substr($r['mm'], 5) - 1] . '/' . substr($r['mm'], 2, 2)] = (float) $r['m'];
 }
 
 // Pagamentos, exclusões e notas
-$pag = castelo_q($pdo, 'SELECT IF(pagamento = "", "Não informado", pagamento) f, COUNT(*) n, SUM(total) v FROM pc_pedidos WHERE excluido = 0 AND aberto BETWEEN :i AND :f GROUP BY f ORDER BY v DESC', $P);
-$exc = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total),0) v FROM pc_pedidos WHERE excluido = 1 AND aberto BETWEEN :i AND :f', $P)[0];
+$pag = castelo_q($pdo, 'SELECT IF(pagamento = "", "Não informado", pagamento) f, COUNT(*) n, SUM(total - lanche_valor) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f GROUP BY f ORDER BY v DESC', $P);
+$exc = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total),0) v FROM pc_pedidos WHERE excluido = 1 AND so_lanche = 0 AND aberto BETWEEN :i AND :f', $P)[0];
 $notas = castelo_an_info($pdo, 'pede-coxinha', 'notas_problema') ?: [];
 $nomeNota = ['0' => 'Rejeitadas', '8888' => 'Indefinidas', '999' => 'Em contingência (off-line)'];
 $imp = castelo_q($pdo, 'SELECT quando FROM an_importacoes WHERE empresa = "pede-coxinha" ORDER BY id DESC LIMIT 1')[0]['quando'] ?? null;
@@ -196,7 +196,7 @@ $wa = function (string $f): string {
   <div>
     <p class="intersect-kicker">Análises</p>
     <h1>Pede Coxinha</h1>
-    <p class="muted">Dados do Consumer até <?= h(date('d/m/Y H:i', strtotime($ult))) ?><?= $imp ? ' · importado em ' . h(date('d/m/Y', strtotime($imp))) : '' ?>. Período: <?= h(date('d/m/Y', strtotime($ini))) ?> a <?= h(date('d/m/Y', strtotime($fim))) ?> (<?= castelo_num($dias) ?> dias)<?= $temAnt ? ', comparado com os ' . castelo_num($dias) . ' dias anteriores' : ', sem comparação' ?>.</p>
+    <p class="muted">Sem os lanches da Forasteiro (prensado, hot dog, hambúrguer artesanal e milkshake). Dados do Consumer até <?= h(date('d/m/Y H:i', strtotime($ult))) ?><?= $imp ? ' · importado em ' . h(date('d/m/Y', strtotime($imp))) : '' ?>. Período: <?= h(date('d/m/Y', strtotime($ini))) ?> a <?= h(date('d/m/Y', strtotime($fim))) ?> (<?= castelo_num($dias) ?> dias)<?= $temAnt ? ', comparado com os ' . castelo_num($dias) . ' dias anteriores' : ', sem comparação' ?>.</p>
   </div>
   <div class="fin-mes"><a class="btn-sec" href="analise-importar.php">Importar dados</a></div>
 </div>

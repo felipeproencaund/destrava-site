@@ -193,4 +193,22 @@ function castelo_migrate_analises(PDO $pdo): void {
         clientes INT NOT NULL DEFAULT 0,
         usuario VARCHAR(60) NOT NULL DEFAULT ''
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $tem = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pc_pedidos' AND COLUMN_NAME = 'so_lanche'")->fetchColumn();
+    if ((int) $tem === 0) {
+        $pdo->exec('ALTER TABLE pc_pedidos ADD COLUMN lanche_valor DECIMAL(10,2) NOT NULL DEFAULT 0, ADD COLUMN so_lanche TINYINT(1) NOT NULL DEFAULT 0');
+        castelo_pc_marca_lanches($pdo);
+    }
 }
+
+/** Lanches da Forasteiro (prensado, hot dog, hambúrguer artesanal, milkshake) ficam fora das análises da Pede Coxinha. */
+function castelo_pc_lanche(string $a = ''): string {
+    return "({$a}categoria IN ('lanche prensado','hambúrguer') OR {$a}produto REGEXP 'hot ?dog|milk ?shake')";
+}
+
+/** Marca em cada pedido quanto foi de lanche e se o pedido foi só de lanche. */
+function castelo_pc_marca_lanches(PDO $pdo): void {
+    $pdo->exec('UPDATE pc_pedidos p JOIN (SELECT pedido_id, SUM(CASE WHEN ' . castelo_pc_lanche() . ' THEN valor ELSE 0 END) lv,
+        SUM(NOT ' . castelo_pc_lanche() . ') outros FROM pc_itens WHERE pai = 0 GROUP BY pedido_id) x ON x.pedido_id = p.id
+        SET p.lanche_valor = LEAST(x.lv, p.total), p.so_lanche = (x.outros = 0)');
+}
+
