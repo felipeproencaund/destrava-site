@@ -13,34 +13,9 @@ if (!$ult): ?>
   <p class="empty-state">Ainda não tem dados. <a href="analise-importar.php">Importe o arquivo do Consumer</a> pra começar.</p>
 <?php destrava_admin_foot(); exit; endif;
 
-// Período: 30/90/180/365 dias até o último pedido, todo o período, ou datas escolhidas
-$fimD = date('Y-m-d', strtotime($ult));
-$primeiroD = date('Y-m-d', strtotime((string) castelo_q($pdo, 'SELECT MIN(aberto) d FROM pc_pedidos WHERE excluido = 0')[0]['d']));
-$okData = function ($v): bool {
-    return is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) && strtotime($v) !== false;
-};
-$modo = $_GET['p'] ?? '90';
-$de = $_GET['de'] ?? '';
-$ate = $_GET['ate'] ?? '';
-if ($okData($de) && $okData($ate) && $de <= $ate) {
-    $modo = 'pers';
-    $iniD = $de;
-    $fimD = $ate;
-} elseif ($modo === 'tudo') {
-    $iniD = $primeiroD;
-} else {
-    $modo = in_array((int) $modo, [30, 90, 180, 365], true) ? (string) (int) $modo : '90';
-    $iniD = date('Y-m-d', strtotime($fimD . ' -' . ((int) $modo - 1) . ' days'));
-}
-$dias = (int) round((strtotime($fimD) - strtotime($iniD)) / 86400) + 1;
-$fim = $fimD . ' 23:59:59';
-$ini = $iniD . ' 00:00:00';
-$temAnt = $modo !== 'tudo' && $iniD > $primeiroD;
-$iniA = date('Y-m-d 00:00:00', strtotime($iniD . ' -' . $dias . ' days'));
-$fimA = date('Y-m-d 23:59:59', strtotime($iniD . ' -1 day'));
-$P = ['i' => $ini, 'f' => $fim];
-$PA = ['i' => $iniA, 'f' => $fimA];
-$sem = max(1, $dias) / 7;
+$pe = castelo_pc_periodo($pdo, $ult);
+['modo' => $modo, 'iniD' => $iniD, 'fimD' => $fimD, 'primeiroD' => $primeiroD, 'dias' => $dias, 'ini' => $ini, 'fim' => $fim,
+    'iniA' => $iniA, 'fimA' => $fimA, 'temAnt' => $temAnt, 'P' => $P, 'PA' => $PA, 'sem' => $sem] = $pe;
 $var = function (float $a, float $b) use ($temAnt): string {
     return $temAnt ? castelo_var($a, $b) : '<span class="muted">–</span>';
 };
@@ -200,17 +175,7 @@ $wa = function (string $f): string {
   </div>
   <div class="fin-mes"><a class="btn-sec" href="analise-importar.php">Importar dados</a></div>
 </div>
-<nav class="filter-bar" aria-label="Período">
-  <?php foreach (['30' => '30 dias', '90' => '90 dias', '180' => '6 meses', '365' => '12 meses', 'tudo' => 'Todo o período'] as $d => $l): ?>
-    <a class="filter-chip <?= (string) $d === $modo ? 'is-active' : '' ?>" href="analise-pc.php?p=<?= h((string) $d) ?>"><?= h($l) ?></a>
-  <?php endforeach; ?>
-</nav>
-<form method="get" class="an-periodo <?= $modo === 'pers' ? 'is-active' : '' ?>" action="analise-pc.php">
-  <span class="kpi-rotulo">Período personalizado</span>
-  <label>De <input type="date" name="de" value="<?= h($iniD) ?>" min="<?= h($primeiroD) ?>" required></label>
-  <label>Até <input type="date" name="ate" value="<?= h($fimD) ?>" min="<?= h($primeiroD) ?>" required></label>
-  <button type="submit" class="btn-sec">Ver</button>
-</form>
+<?= castelo_pc_periodo_html($pe, 'analise-pc.php') ?>
 
 <section class="kpis">
   <div class="kpi"><span class="kpi-rotulo">Faturamento</span><strong class="valor-entrada"><?= castelo_reais($k['v']) ?></strong><span class="kpi-nota"><?= $temAnt ? $var($k['v'], $ka['v']) . ' · antes ' . castelo_reais($ka['v']) : castelo_reais($k['v'] / max(1, $dias)) . ' por dia' ?></span></div>
@@ -251,16 +216,22 @@ $wa = function (string $f): string {
   <div class="fin-grafico-wrap"><?= castelo_svg_barras($porSemana, ['series' => ['semana normal', 'pedidos grandes'], 'titulo' => 'Mini salgados por semana']) ?></div>
 </section>
 
+<section class="painel-card an-escolher">
+  <h2>Analisar um produto ou categoria</h2>
+  <p class="muted">Escolha na lista: abre vendas por mês, horário, dia da semana, sabores, o que sai junto e como sai.</p>
+  <a class="btn-primary" href="analise-produto.php?p=<?= h($modo === 'pers' ? '90' : $modo) ?>">Escolher produto →</a>
+</section>
+
 <section class="painel-card">
   <h2>Produtos</h2>
   <div class="an-cats">
-    <?php foreach ($cats as $c => $v): ?><span class="filter-chip"><?= h(ucfirst($c)) ?> · <?= $pct($v, $totProd) ?></span><?php endforeach; ?>
+    <?php foreach ($cats as $c => $v): ?><a class="filter-chip" href="analise-produto.php?cat=<?= h(rawurlencode($c)) ?>&amp;p=<?= h($modo === 'pers' ? '90' : $modo) ?>"><?= h(ucfirst($c)) ?> · <?= $pct($v, $totProd) ?> →</a><?php endforeach; ?>
   </div>
   <div class="fin-tabela"><table>
     <thead><tr><th>Produto</th><th>Unidades</th><th>Por semana</th><th>Faturamento</th><th>%</th><th>vs. antes</th></tr></thead>
     <tbody>
     <?php foreach (array_slice($prod, 0, 25) as $r): ?>
-      <tr><td><?= h($r['produto']) ?><?= $novo($r['produto']) ? ' <span class="an-novo">novidade</span>' : '' ?></td><td><?= castelo_num((float) $r['q']) ?></td><td><?= castelo_num($r['q'] / $sem, 1) ?></td><td><?= castelo_reais((float) $r['v']) ?></td><td><?= $pct((float) $r['v'], $totProd) ?></td><td><?= $var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></td></tr>
+      <tr><td><a class="an-link" href="analise-produto.php?prod=<?= h(rawurlencode($r['produto'])) ?>&amp;p=<?= h($modo === 'pers' ? '90' : $modo) ?>"><?= h($r['produto']) ?></a><?= $novo($r['produto']) ? ' <span class="an-novo">novidade</span>' : '' ?></td><td><?= castelo_num((float) $r['q']) ?></td><td><?= castelo_num($r['q'] / $sem, 1) ?></td><td><?= castelo_reais((float) $r['v']) ?></td><td><?= $pct((float) $r['v'], $totProd) ?></td><td><?= $var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></td></tr>
     <?php endforeach; ?>
     </tbody></table></div>
 </section>
@@ -292,15 +263,7 @@ $wa = function (string $f): string {
   </section>
 </div>
 
-<?php if ($batatas): $totB = max(1, array_sum(array_column($batatas, 'q'))); ?>
-<section class="painel-card">
-  <h2>Batata recheada</h2>
-  <p class="muted"><?= castelo_num($totB / $sem, 1) ?> por semana no período.</p>
-  <ul class="lista-simples">
-    <?php foreach ($batatas as $r): ?><li><span><?= h(preg_replace('/^Batata /', '', $r['produto'])) ?></span><strong><?= castelo_num((float) $r['q']) ?> · <?= $pct((float) $r['q'], $totB) ?> · <?= $var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></strong></li><?php endforeach; ?>
-  </ul>
-</section>
-<?php endif; ?>
+
 
 <div class="painel-grade an-duas">
   <section class="painel-card">

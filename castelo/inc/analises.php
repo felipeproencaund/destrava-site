@@ -186,3 +186,57 @@ function castelo_svg_barras(array $dados, array $op = []): string {
     }
     return $svg . '</svg>';
 }
+
+/** Período das análises: 30/90/180/365 dias até o último pedido, todo o período ou datas escolhidas. */
+function castelo_pc_periodo(PDO $pdo, string $ult): array {
+    $fimD = date('Y-m-d', strtotime($ult));
+    $primeiroD = date('Y-m-d', strtotime((string) castelo_q($pdo, 'SELECT MIN(aberto) d FROM pc_pedidos WHERE excluido = 0')[0]['d']));
+    $ok = function ($v): bool {
+        return is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) && strtotime($v) !== false;
+    };
+    $modo = (string) ($_GET['p'] ?? '90');
+    $de = $_GET['de'] ?? '';
+    $ate = $_GET['ate'] ?? '';
+    if ($ok($de) && $ok($ate) && $de <= $ate) {
+        $modo = 'pers';
+        $iniD = $de;
+        $fimD = $ate;
+    } elseif ($modo === 'tudo') {
+        $iniD = $primeiroD;
+    } else {
+        $modo = in_array((int) $modo, [30, 90, 180, 365], true) ? (string) (int) $modo : '90';
+        $iniD = date('Y-m-d', strtotime($fimD . ' -' . ((int) $modo - 1) . ' days'));
+    }
+    $dias = (int) round((strtotime($fimD) - strtotime($iniD)) / 86400) + 1;
+    $ini = $iniD . ' 00:00:00';
+    $fim = $fimD . ' 23:59:59';
+    $iniA = date('Y-m-d 00:00:00', strtotime($iniD . ' -' . $dias . ' days'));
+    $fimA = date('Y-m-d 23:59:59', strtotime($iniD . ' -1 day'));
+    return ['modo' => $modo, 'iniD' => $iniD, 'fimD' => $fimD, 'primeiroD' => $primeiroD, 'dias' => $dias, 'ini' => $ini, 'fim' => $fim,
+        'iniA' => $iniA, 'fimA' => $fimA, 'temAnt' => $modo !== 'tudo' && $iniD > $primeiroD,
+        'P' => ['i' => $ini, 'f' => $fim], 'PA' => ['i' => $iniA, 'f' => $fimA], 'sem' => max(1, $dias) / 7];
+}
+
+/** Botões de período e formulário de datas. $extra: parâmetros que a página precisa manter (ex.: produto escolhido). */
+function castelo_pc_periodo_html(array $pe, string $pagina, array $extra = []): string {
+    $q = $extra ? '&amp;' . htmlspecialchars(http_build_query($extra), ENT_QUOTES) : '';
+    $o = '<nav class="filter-bar" aria-label="Período">';
+    foreach (['30' => '30 dias', '90' => '90 dias', '180' => '6 meses', '365' => '12 meses', 'tudo' => 'Todo o período'] as $d => $l) {
+        $o .= '<a class="filter-chip ' . ((string) $d === $pe['modo'] ? 'is-active' : '') . '" href="' . $pagina . '?p=' . $d . $q . '">' . $l . '</a>';
+    }
+    $o .= '</nav><form method="get" class="an-periodo ' . ($pe['modo'] === 'pers' ? 'is-active' : '') . '" action="' . $pagina . '">';
+    foreach ($extra as $k => $v) {
+        $o .= '<input type="hidden" name="' . htmlspecialchars((string) $k, ENT_QUOTES) . '" value="' . htmlspecialchars((string) $v, ENT_QUOTES) . '">';
+    }
+    $o .= '<span class="kpi-rotulo">Período personalizado</span>'
+        . '<label>De <input type="date" name="de" value="' . htmlspecialchars($pe['iniD'], ENT_QUOTES) . '" min="' . htmlspecialchars($pe['primeiroD'], ENT_QUOTES) . '" required></label>'
+        . '<label>Até <input type="date" name="ate" value="' . htmlspecialchars($pe['fimD'], ENT_QUOTES) . '" min="' . htmlspecialchars($pe['primeiroD'], ENT_QUOTES) . '" required></label>'
+        . '<button type="submit" class="btn-sec">Ver</button></form>';
+    return $o;
+}
+
+/** Texto do período pra mostrar no topo. */
+function castelo_pc_periodo_texto(array $pe): string {
+    return 'Período: ' . date('d/m/Y', strtotime($pe['ini'])) . ' a ' . date('d/m/Y', strtotime($pe['fim'])) . ' (' . castelo_num($pe['dias']) . ' dias)'
+        . ($pe['temAnt'] ? ', comparado com os ' . castelo_num($pe['dias']) . ' dias anteriores' : ', sem comparação') . '.';
+}

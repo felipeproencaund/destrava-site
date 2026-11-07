@@ -605,3 +605,18 @@ a.an-empresa:hover{border-color:var(--a-gold,#C9A45C);transform:translateY(-2px)
 .an-rolagem::-webkit-scrollbar{width:6px}
 .an-rolagem::-webkit-scrollbar-thumb{background:rgb(201 164 92 / .5);border-radius:6px}
 .fin-grafico .g-valor{fill:#E8EEF4;font:700 11px Manrope,sans-serif}
+.an-dentro{margin:18px 0 0}
+.an-kpis-mini{margin:6px 0 10px}
+.an-escolha{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:0 0 16px;padding:14px;border:1px solid var(--a-gold,#C9A45C);border-radius:12px;background:rgb(201 164 92 / .06)}
+.an-escolha .kpi-rotulo{width:100%}
+.an-escolha select{flex:1;min-width:220px;max-width:520px}
+.an-escolher{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.an-link{color:inherit;text-decoration:none;border-bottom:1px dashed rgb(201 164 92 / .5)}
+.an-link:hover{color:var(--a-gold,#C9A45C)}
+.an-cats a.filter-chip{cursor:pointer;text-decoration:none}
+.an-desde{margin:-6px 0 16px}
+.an-barrinha{display:block;width:120px;height:5px;margin-top:5px;border-radius:9px;background:rgb(255 255 255 / .06);overflow:hidden}
+.an-barrinha span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8C6D2D,#E3C27F);border-radius:9px}
+.an-precos{display:flex;flex-wrap:wrap;gap:8px}
+.an-precos span{display:flex;flex-direction:column;padding:8px 10px;border:1px solid var(--a-border);border-radius:10px;font-weight:700;font-size:14px;min-width:84px}
+.an-precos small{font-weight:600;color:var(--a-text-muted);font-size:11px}
