@@ -13,15 +13,37 @@ if (!$ult): ?>
   <p class="empty-state">Ainda não tem dados. <a href="analise-importar.php">Importe o arquivo do Consumer</a> pra começar.</p>
 <?php destrava_admin_foot(); exit; endif;
 
-$dias = in_array((int) ($_GET['p'] ?? 90), [30, 90, 180, 365], true) ? (int) $_GET['p'] : 90;
+// Período: 30/90/180/365 dias até o último pedido, todo o período, ou datas escolhidas
 $fimD = date('Y-m-d', strtotime($ult));
+$primeiroD = date('Y-m-d', strtotime((string) castelo_q($pdo, 'SELECT MIN(aberto) d FROM pc_pedidos WHERE excluido = 0')[0]['d']));
+$okData = function ($v): bool {
+    return is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) && strtotime($v) !== false;
+};
+$modo = $_GET['p'] ?? '90';
+$de = $_GET['de'] ?? '';
+$ate = $_GET['ate'] ?? '';
+if ($okData($de) && $okData($ate) && $de <= $ate) {
+    $modo = 'pers';
+    $iniD = $de;
+    $fimD = $ate;
+} elseif ($modo === 'tudo') {
+    $iniD = $primeiroD;
+} else {
+    $modo = in_array((int) $modo, [30, 90, 180, 365], true) ? (string) (int) $modo : '90';
+    $iniD = date('Y-m-d', strtotime($fimD . ' -' . ((int) $modo - 1) . ' days'));
+}
+$dias = (int) round((strtotime($fimD) - strtotime($iniD)) / 86400) + 1;
 $fim = $fimD . ' 23:59:59';
-$ini = date('Y-m-d 00:00:00', strtotime($fimD . ' -' . ($dias - 1) . ' days'));
-$iniA = date('Y-m-d 00:00:00', strtotime($fimD . ' -' . (2 * $dias - 1) . ' days'));
-$fimA = date('Y-m-d 23:59:59', strtotime($fimD . ' -' . $dias . ' days'));
+$ini = $iniD . ' 00:00:00';
+$temAnt = $modo !== 'tudo' && $iniD > $primeiroD;
+$iniA = date('Y-m-d 00:00:00', strtotime($iniD . ' -' . $dias . ' days'));
+$fimA = date('Y-m-d 23:59:59', strtotime($iniD . ' -1 day'));
 $P = ['i' => $ini, 'f' => $fim];
 $PA = ['i' => $iniA, 'f' => $fimA];
-$sem = $dias / 7;
+$sem = max(1, $dias) / 7;
+$var = function (float $a, float $b) use ($temAnt): string {
+    return $temAnt ? castelo_var($a, $b) : '<span class="muted">–</span>';
+};
 
 // KPIs do período e do anterior
 $kpi = function (array $p) use ($pdo): array {
@@ -166,21 +188,27 @@ $wa = function (string $f): string {
   <div>
     <p class="intersect-kicker">Análises</p>
     <h1>Pede Coxinha</h1>
-    <p class="muted">Dados do Consumer até <?= h(date('d/m/Y H:i', strtotime($ult))) ?><?= $imp ? ' · importado em ' . h(date('d/m/Y', strtotime($imp))) : '' ?>. Período: <?= h(date('d/m/Y', strtotime($ini))) ?> a <?= h(date('d/m/Y', strtotime($fim))) ?>, comparado com os <?= $dias ?> dias anteriores.</p>
+    <p class="muted">Dados do Consumer até <?= h(date('d/m/Y H:i', strtotime($ult))) ?><?= $imp ? ' · importado em ' . h(date('d/m/Y', strtotime($imp))) : '' ?>. Período: <?= h(date('d/m/Y', strtotime($ini))) ?> a <?= h(date('d/m/Y', strtotime($fim))) ?> (<?= castelo_num($dias) ?> dias)<?= $temAnt ? ', comparado com os ' . castelo_num($dias) . ' dias anteriores' : ', sem comparação' ?>.</p>
   </div>
   <div class="fin-mes"><a class="btn-sec" href="analise-importar.php">Importar dados</a></div>
 </div>
 <nav class="filter-bar" aria-label="Período">
-  <?php foreach ([30 => '30 dias', 90 => '90 dias', 180 => '6 meses', 365 => '12 meses'] as $d => $l): ?>
-    <a class="filter-chip <?= $d === $dias ? 'is-active' : '' ?>" href="analise-pc.php?p=<?= $d ?>"><?= h($l) ?></a>
+  <?php foreach (['30' => '30 dias', '90' => '90 dias', '180' => '6 meses', '365' => '12 meses', 'tudo' => 'Todo o período'] as $d => $l): ?>
+    <a class="filter-chip <?= (string) $d === $modo ? 'is-active' : '' ?>" href="analise-pc.php?p=<?= h((string) $d) ?>"><?= h($l) ?></a>
   <?php endforeach; ?>
 </nav>
+<form method="get" class="an-periodo <?= $modo === 'pers' ? 'is-active' : '' ?>" action="analise-pc.php">
+  <span class="kpi-rotulo">Período personalizado</span>
+  <label>De <input type="date" name="de" value="<?= h($iniD) ?>" min="<?= h($primeiroD) ?>" required></label>
+  <label>Até <input type="date" name="ate" value="<?= h($fimD) ?>" min="<?= h($primeiroD) ?>" required></label>
+  <button type="submit" class="btn-sec">Ver</button>
+</form>
 
 <section class="kpis">
-  <div class="kpi"><span class="kpi-rotulo">Faturamento</span><strong class="valor-entrada"><?= castelo_reais($k['v']) ?></strong><span class="kpi-nota"><?= castelo_var($k['v'], $ka['v']) ?> · antes <?= castelo_reais($ka['v']) ?></span></div>
-  <div class="kpi"><span class="kpi-rotulo">Pedidos</span><strong><?= castelo_num($k['n']) ?></strong><span class="kpi-nota"><?= castelo_var($k['n'], $ka['n']) ?> · antes <?= castelo_num($ka['n']) ?></span></div>
-  <div class="kpi"><span class="kpi-rotulo">Ticket médio</span><strong><?= castelo_reais($k['t']) ?></strong><span class="kpi-nota"><?= castelo_var($k['t'], $ka['t']) ?> · antes <?= castelo_reais($ka['t']) ?></span></div>
-  <div class="kpi"><span class="kpi-rotulo">Mini salgados por semana</span><strong><?= castelo_num($k['m'] / $sem) ?></strong><span class="kpi-nota"><?= castelo_var($k['m'], $ka['m']) ?> · em cento e meio cento</span></div>
+  <div class="kpi"><span class="kpi-rotulo">Faturamento</span><strong class="valor-entrada"><?= castelo_reais($k['v']) ?></strong><span class="kpi-nota"><?= $temAnt ? $var($k['v'], $ka['v']) . ' · antes ' . castelo_reais($ka['v']) : castelo_reais($k['v'] / max(1, $dias)) . ' por dia' ?></span></div>
+  <div class="kpi"><span class="kpi-rotulo">Pedidos</span><strong><?= castelo_num($k['n']) ?></strong><span class="kpi-nota"><?= $temAnt ? $var($k['n'], $ka['n']) . ' · antes ' . castelo_num($ka['n']) : castelo_num($k['n'] / max(1, $dias), 1) . ' por dia' ?></span></div>
+  <div class="kpi"><span class="kpi-rotulo">Ticket médio</span><strong><?= castelo_reais($k['t']) ?></strong><span class="kpi-nota"><?= $temAnt ? $var($k['t'], $ka['t']) . ' · antes ' . castelo_reais($ka['t']) : 'média do período' ?></span></div>
+  <div class="kpi"><span class="kpi-rotulo">Mini salgados por semana</span><strong><?= castelo_num($k['m'] / $sem) ?></strong><span class="kpi-nota"><?= $temAnt ? $var($k['m'], $ka['m']) . ' · ' : '' ?>em cento e meio cento</span></div>
 </section>
 
 <section class="painel-card">
@@ -224,7 +252,7 @@ $wa = function (string $f): string {
     <thead><tr><th>Produto</th><th>Unidades</th><th>Por semana</th><th>Faturamento</th><th>%</th><th>vs. antes</th></tr></thead>
     <tbody>
     <?php foreach (array_slice($prod, 0, 25) as $r): ?>
-      <tr><td><?= h($r['produto']) ?><?= $novo($r['produto']) ? ' <span class="an-novo">novidade</span>' : '' ?></td><td><?= castelo_num((float) $r['q']) ?></td><td><?= castelo_num($r['q'] / $sem, 1) ?></td><td><?= castelo_reais((float) $r['v']) ?></td><td><?= $pct((float) $r['v'], $totProd) ?></td><td><?= castelo_var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></td></tr>
+      <tr><td><?= h($r['produto']) ?><?= $novo($r['produto']) ? ' <span class="an-novo">novidade</span>' : '' ?></td><td><?= castelo_num((float) $r['q']) ?></td><td><?= castelo_num($r['q'] / $sem, 1) ?></td><td><?= castelo_reais((float) $r['v']) ?></td><td><?= $pct((float) $r['v'], $totProd) ?></td><td><?= $var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></td></tr>
     <?php endforeach; ?>
     </tbody></table></div>
 </section>
@@ -234,8 +262,8 @@ $wa = function (string $f): string {
     <h2>Caindo</h2>
     <p class="muted">Venderam 20% menos que no período anterior.</p>
     <ul class="lista-simples">
-      <?php foreach (array_slice($caindo, 0, 10) as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= castelo_var((float) $r['q'], $prodA[$r['produto']]) ?></strong></li><?php endforeach; ?>
-      <?php if (!$caindo): ?><li><span class="muted">Nenhum produto caiu mais de 20%.</span></li><?php endif; ?>
+      <?php foreach (array_slice($caindo, 0, 10) as $r): ?><li><span><?= h($r['produto']) ?></span><strong><?= $var((float) $r['q'], $prodA[$r['produto']]) ?></strong></li><?php endforeach; ?>
+      <?php if (!$caindo): ?><li><span class="muted"><?= $temAnt ? 'Nenhum produto caiu mais de 20%.' : 'Sem período anterior pra comparar.' ?></span></li><?php endif; ?>
     </ul>
   </section>
   <section class="painel-card">
@@ -261,7 +289,7 @@ $wa = function (string $f): string {
   <h2>Batata recheada</h2>
   <p class="muted"><?= castelo_num($totB / $sem, 1) ?> por semana no período.</p>
   <ul class="lista-simples">
-    <?php foreach ($batatas as $r): ?><li><span><?= h(preg_replace('/^Batata /', '', $r['produto'])) ?></span><strong><?= castelo_num((float) $r['q']) ?> · <?= $pct((float) $r['q'], $totB) ?> · <?= castelo_var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></strong></li><?php endforeach; ?>
+    <?php foreach ($batatas as $r): ?><li><span><?= h(preg_replace('/^Batata /', '', $r['produto'])) ?></span><strong><?= castelo_num((float) $r['q']) ?> · <?= $pct((float) $r['q'], $totB) ?> · <?= $var((float) $r['q'], $prodA[$r['produto']] ?? 0) ?></strong></li><?php endforeach; ?>
   </ul>
 </section>
 <?php endif; ?>

@@ -596,3 +596,8 @@ a.an-empresa:hover{border-color:var(--a-gold,#C9A45C);transform:translateY(-2px)
 .an-leg-ouro{background:#C9A45C}
 .an-leg-verde{background:#5FD39A}
 .fin-tabela td small,.lista-simples small{font-weight:400}
+.an-periodo{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px;margin:-6px 0 18px;padding:12px 14px;border:1px solid var(--a-border);border-radius:12px;background:rgb(255 255 255 / .02)}
+.an-periodo.is-active{border-color:var(--a-gold,#C9A45C)}
+.an-periodo .kpi-rotulo{width:100%}
+.an-periodo label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--a-text-muted)}
+.an-periodo input[type=date]{min-width:150px}
