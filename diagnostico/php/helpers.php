@@ -124,3 +124,28 @@ function destrava_limit_list($value, int $maxItems, int $maxJsonBytes): ?array {
     }
     return $value;
 }
+
+/**
+ * Garante a coluna admin_users.castelo (1 = pode entrar no Castelo e gerenciar usuários).
+ * Na primeira vez, só o usuário felipeproenca recebe a marca. Roda uma vez por requisição.
+ */
+function destrava_garante_coluna_castelo(PDO $pdo): void {
+    static $feito = false;
+    if ($feito) {
+        return;
+    }
+    $feito = true;
+    $tem = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'admin_users' AND COLUMN_NAME = 'castelo'")->fetchColumn();
+    if ((int) $tem === 0) {
+        $pdo->exec('ALTER TABLE admin_users ADD COLUMN castelo TINYINT(1) NOT NULL DEFAULT 0');
+        $pdo->exec("UPDATE admin_users SET castelo = 1 WHERE username = 'felipeproenca'");
+    }
+}
+
+/** Verdadeiro se o usuário pode entrar no Castelo (e gerenciar usuários). */
+function destrava_usuario_e_dono(PDO $pdo, int $id): bool {
+    destrava_garante_coluna_castelo($pdo);
+    $stmt = $pdo->prepare('SELECT castelo FROM admin_users WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+    return (int) $stmt->fetchColumn() === 1;
+}

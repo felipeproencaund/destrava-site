@@ -5,6 +5,7 @@ function destrava_admin_head(string $title, string $active = ''): void {
         ['inicio', 'index.php', 'Início', 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
         ['leads', 'leads.php', 'CRM', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'],
         ['financeiro', 'financeiro.php', 'Financeiro', 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+        ['analises', 'analises.php', 'Análises', 'M3 3v18h18M7 15l4-4 3 3 6-6'],
         ['contratos', 'modulo.php?m=contratos', 'Contratos', 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4M10 9H8m8 4H8m8 4H8'],
         ['planejamento', 'modulo.php?m=planejamento', 'Planejamento', 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2'],
     ];
@@ -18,7 +19,7 @@ function destrava_admin_head(string $title, string $active = ''): void {
 <title><?= h($title) ?> | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=16">
+<link rel="stylesheet" href="assets/castelo.css?v=17">
 <script src="assets/castelo.js?v=5" defer></script>
 </head>
 <body class="castelo-body">

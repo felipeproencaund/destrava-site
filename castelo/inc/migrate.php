@@ -139,3 +139,58 @@ function castelo_migrate_financeiro(PDO $pdo): void {
     }
 
 }
+
+/** Tabelas das Análises (dados que vêm dos sistemas das empresas; hoje, Pede Coxinha via Consumer). */
+function castelo_migrate_analises(PDO $pdo): void {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_clientes (
+        id INT PRIMARY KEY,
+        nome VARCHAR(120) NOT NULL DEFAULT '',
+        fone VARCHAR(20) NOT NULL DEFAULT '',
+        bairro VARCHAR(80) NOT NULL DEFAULT ''
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_pedidos (
+        id INT PRIMARY KEY,
+        numero INT NOT NULL DEFAULT 0,
+        aberto DATETIME NOT NULL,
+        total DECIMAL(10,2) NOT NULL DEFAULT 0,
+        entrega DECIMAL(10,2) NOT NULL DEFAULT 0,
+        canal VARCHAR(10) NOT NULL DEFAULT 'balcao',
+        agendado TINYINT(1) NOT NULL DEFAULT 0,
+        previsto DATETIME NULL,
+        cliente_id INT NULL,
+        escola VARCHAR(60) NULL,
+        excluido TINYINT(1) NOT NULL DEFAULT 0,
+        pagamento VARCHAR(40) NOT NULL DEFAULT '',
+        INDEX idx_aberto (aberto),
+        INDEX idx_cliente (cliente_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_itens (
+        id INT PRIMARY KEY,
+        pedido_id INT NOT NULL,
+        pai TINYINT(1) NOT NULL DEFAULT 0,
+        produto VARCHAR(120) NOT NULL DEFAULT '',
+        categoria VARCHAR(40) NOT NULL DEFAULT '',
+        qtd DECIMAL(10,3) NOT NULL DEFAULT 0,
+        valor DECIMAL(10,2) NOT NULL DEFAULT 0,
+        mini INT NOT NULL DEFAULT 0,
+        INDEX idx_pedido (pedido_id),
+        INDEX idx_produto (produto)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS an_info (
+        empresa VARCHAR(40) NOT NULL,
+        chave VARCHAR(60) NOT NULL,
+        valor TEXT NOT NULL,
+        PRIMARY KEY (empresa, chave)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS an_importacoes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        empresa VARCHAR(40) NOT NULL,
+        quando DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        fonte VARCHAR(40) NOT NULL DEFAULT '',
+        gerado_em DATETIME NULL,
+        pedidos INT NOT NULL DEFAULT 0,
+        itens INT NOT NULL DEFAULT 0,
+        clientes INT NOT NULL DEFAULT 0,
+        usuario VARCHAR(60) NOT NULL DEFAULT ''
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+}

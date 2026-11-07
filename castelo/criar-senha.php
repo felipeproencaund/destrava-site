@@ -3,7 +3,7 @@
 require_once __DIR__ . '/inc/auth.php';
 
 $id = (int) ($_SESSION['criar_senha_id'] ?? 0);
-$stmt = destrava_db()->prepare("SELECT username FROM admin_users WHERE id = :id AND (password_hash IS NULL OR password_hash = '')");
+$stmt = destrava_db()->prepare("SELECT username FROM admin_users WHERE id = :id AND castelo = 1 AND (password_hash IS NULL OR password_hash = '')");
 $stmt->execute(['id' => $id]);
 $username = $stmt->fetchColumn();
 if (!$id || !$username) {
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Criar senha | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=16">
+<link rel="stylesheet" href="assets/castelo.css?v=17">
 </head>
 <body class="castelo-login">
   <div class="login-card">

@@ -569,3 +569,30 @@ h1,h2,h3{font-family:Sora,var(--font);letter-spacing:-.01em}
 .meta-mini strong{font:800 24px/1.1 Sora,var(--font);color:#E3C27F}
 .meta-mini .kpi-nota{color:var(--a-text-muted)}
 .meta-mini:hover{border-color:#C9A565}
+
+/* ===== Análises ===== */
+.an-empresas{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.an-empresa{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
+a.an-empresa:hover{border-color:var(--a-gold,#C9A45C);transform:translateY(-2px)}
+.an-empresa strong{font-size:26px;font-family:var(--a-font-display,inherit)}
+.an-abrir{margin-top:auto;padding-top:10px;color:var(--a-gold,#C9A45C);font-weight:600;font-size:14px}
+.an-embreve{opacity:.6}
+.an-duas{display:grid;gap:16px;grid-template-columns:1fr}
+.an-tres{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:900px){.an-duas{grid-template-columns:1fr 1fr}.an-tres{grid-template-columns:repeat(3,1fr)}}
+.an-duas>.painel-card,.an-tres>.painel-card{margin:0}
+.an-duas,.an-tres{margin-bottom:16px}
+.an-var{font-weight:700}
+.an-sobe{color:#5FD39A}
+.an-desce{color:#FF8A80}
+.an-novo{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:700;background:rgb(95 211 154 / .15);color:#5FD39A}
+.an-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 14px}
+.an-split div{background:rgb(255 255 255 / .03);border:1px solid var(--a-border);border-radius:12px;padding:12px 14px}
+.an-split strong{display:block;font-size:28px;margin-top:2px}
+.an-cats{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.an-cats .filter-chip{cursor:default}
+.an-grande{font-size:34px;font-weight:700;margin:6px 0 0}
+.an-leg{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:middle}
+.an-leg-ouro{background:#C9A45C}
+.an-leg-verde{background:#5FD39A}
+.fin-tabela td small,.lista-simples small{font-weight:400}

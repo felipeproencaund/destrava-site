@@ -29,6 +29,12 @@ function destrava_admin_require_login(): void {
         header('Location: login.php');
         exit;
     }
+    // Castelo é só do dono: confere a cada página (se a marca sair do banco, a sessão cai).
+    if (!destrava_usuario_e_dono(destrava_db(), (int) $_SESSION['admin_user_id'])) {
+        destrava_admin_logout();
+        header('Location: login.php');
+        exit;
+    }
     // prepara o banco para o CRM (uma vez por sessão)
     if (empty($_SESSION['crm_migrated_v1'])) {
         destrava_migrate(destrava_db());
@@ -37,6 +43,10 @@ function destrava_admin_require_login(): void {
     if (empty($_SESSION['fin_migrated_v3'])) {
         castelo_migrate_financeiro(destrava_db());
         $_SESSION['fin_migrated_v3'] = 1;
+    }
+    if (empty($_SESSION['an_migrated_v1'])) {
+        castelo_migrate_analises(destrava_db());
+        $_SESSION['an_migrated_v1'] = 1;
     }
 }
 
@@ -57,7 +67,8 @@ function destrava_wa_link(string $number, string $text = ''): string {
 
 function destrava_admin_attempt_login(string $username, string $password): bool {
     $pdo = destrava_db();
-    $stmt = $pdo->prepare('SELECT id, password_hash FROM admin_users WHERE username = :u LIMIT 1');
+    destrava_garante_coluna_castelo($pdo);
+    $stmt = $pdo->prepare('SELECT id, password_hash FROM admin_users WHERE username = :u AND castelo = 1 LIMIT 1');
     $stmt->execute(['u' => $username]);
     $user = $stmt->fetch();
 
@@ -125,7 +136,8 @@ function castelo_reais(float $v): string {
 
 /** Id do usuário cuja senha foi zerada no banco (password_hash vazio), ou 0. */
 function destrava_usuario_sem_senha(string $username): int {
-    $stmt = destrava_db()->prepare("SELECT id FROM admin_users WHERE username = :u AND (password_hash IS NULL OR password_hash = '') LIMIT 1");
+    destrava_garante_coluna_castelo(destrava_db());
+    $stmt = destrava_db()->prepare("SELECT id FROM admin_users WHERE username = :u AND castelo = 1 AND (password_hash IS NULL OR password_hash = '') LIMIT 1");
     $stmt->execute(['u' => strtolower($username)]);
     return (int) ($stmt->fetchColumn() ?: 0);
 }

@@ -33,26 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $msg = ['success', 'Usuário alterado. No próximo login, entre com "' . $novo . '".'];
             }
         }
-    } elseif ($acao === 'criar_usuario') {
-        $novo = strtolower(trim((string) ($_POST['novo_usuario'] ?? '')));
-        $existe = $pdo->prepare('SELECT COUNT(*) FROM admin_users WHERE username = :u');
-        $existe->execute(['u' => $novo]);
-        if (!preg_match('/^[a-z0-9._-]{3,40}$/', $novo)) {
-            $msg = ['error', 'Use de 3 a 40 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado.'];
-        } elseif ((int) $existe->fetchColumn() > 0) {
-            $msg = ['error', 'Esse nome de usuário já existe.'];
-        } else {
-            $pdo->prepare("INSERT INTO admin_users (username, password_hash) VALUES (:u, '')")->execute(['u' => $novo]);
-            $msg = ['success', 'Usuário "' . $novo . '" criado. No primeiro acesso, a pessoa entra com esse usuário e cria a própria senha.'];
-        }
-    } elseif ($acao === 'excluir') {
-        $alvo = (int) ($_POST['id'] ?? 0);
-        if ($alvo > 0 && $alvo !== (int) $_SESSION['admin_user_id']) {
-            $pdo->prepare('DELETE FROM admin_users WHERE id = :id')->execute(['id' => $alvo]);
-            $msg = ['success', 'Usuário excluído.'];
-        } else {
-            $msg = ['error', 'Você não pode excluir o seu próprio usuário.'];
-        }
     } elseif ($acao === 'senha') {
         $nova = (string) ($_POST['nova'] ?? '');
         $conf = (string) ($_POST['confirma'] ?? '');
@@ -71,9 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 $csrf = destrava_csrf_token();
-$outros = $pdo->prepare('SELECT id, username FROM admin_users WHERE id <> :id ORDER BY username');
-$outros->execute(['id' => $_SESSION['admin_user_id']]);
-$outros = $outros->fetchAll();
 destrava_admin_head('Minha conta', 'senha');
 ?>
 <div class="page-head"><h1>Minha conta</h1></div>
@@ -99,33 +76,7 @@ destrava_admin_head('Minha conta', 'senha');
 </div>
 
 <section class="painel-card conta-usuarios">
-  <h2>Usuários com acesso</h2>
-  <?php if (!$outros): ?>
-    <p class="empty-state">Só você tem acesso ao Castelo.</p>
-  <?php else: ?>
-    <ul class="lista-simples">
-      <?php foreach ($outros as $u): ?>
-        <li>
-          <strong><?= h($u['username']) ?></strong>
-          <form method="post" class="form-excluir" data-confirm="Excluir o usuário <?= h($u['username']) ?>? Ele perde o acesso ao Castelo.">
-            <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-            <input type="hidden" name="acao" value="excluir">
-            <input type="hidden" name="id" value="<?= (int) $u['id'] ?>">
-            <input type="password" name="atual" placeholder="Sua senha" autocomplete="current-password" required>
-            <button type="submit" class="btn-danger">Excluir</button>
-          </form>
-        </li>
-      <?php endforeach; ?>
-    </ul>
-  <?php endif; ?>
-  <h2 class="fin-sub">Adicionar usuário</h2>
-  <p class="muted">A pessoa entra com o usuário e qualquer coisa na senha, e o Castelo pede pra ela criar a senha dela. Crie e avise na hora, pra ninguém usar antes.</p>
-  <form method="post" class="form-excluir">
-    <input type="hidden" name="csrf_token" value="<?= h($csrf) ?>">
-    <input type="hidden" name="acao" value="criar_usuario">
-    <input type="text" name="novo_usuario" placeholder="ex.: nadine" pattern="[a-z0-9._\-]{3,40}" maxlength="40" required>
-    <input type="password" name="atual" placeholder="Sua senha" autocomplete="current-password" required>
-    <button type="submit" class="btn-primary">Criar usuário</button>
-  </form>
+  <h2>Acesso ao Castelo</h2>
+  <p class="muted">Só você entra no Castelo. Os usuários da equipe são criados na área da Destrava, em <a href="https://diagnostico.vempradestrava.com.br/admin/senha.php">Minha conta</a>, e não enxergam o Castelo.</p>
 </section>
 <?php destrava_admin_foot();
