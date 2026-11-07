@@ -39,7 +39,7 @@ destrava_admin_head('Importar dados', 'analises');
   <p class="muted">Arquivo <strong>.json.gz</strong> gerado a partir do backup do Consumer. Pode enviar de novo quantas vezes quiser: o que já existe é atualizado e o que é novo entra. Quando o envio automático da loja estiver ligado, essa tela vira só um plano B.</p>
   <form method="post" enctype="multipart/form-data" class="form-excluir">
     <input type="hidden" name="csrf_token" value="<?= h(destrava_csrf_token()) ?>">
-    <input type="file" name="arquivo" accept=".gz,.json,application/gzip,application/json" required>
+    <input type="file" name="arquivo" required>
     <button type="submit" class="btn-primary">Importar</button>
   </form>
 </section>
