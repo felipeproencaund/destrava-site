@@ -153,9 +153,8 @@ foreach (castelo_q($pdo, 'SELECT DATE_FORMAT(p.aberto, "%Y-%m") mm, COALESCE(SUM
     $escMes[$nm[(int) substr($r['mm'], 5) - 1] . '/' . substr($r['mm'], 2, 2)] = (float) $r['m'];
 }
 
-// Pagamentos, exclusões e notas
+// Pagamentos e notas
 $pag = castelo_q($pdo, 'SELECT IF(pagamento = "", "Não informado", pagamento) f, COUNT(*) n, SUM(total - lanche_valor) v FROM pc_pedidos WHERE excluido = 0 AND so_lanche = 0 AND aberto BETWEEN :i AND :f GROUP BY f ORDER BY v DESC', $P);
-$exc = castelo_q($pdo, 'SELECT COUNT(*) n, COALESCE(SUM(total),0) v FROM pc_pedidos WHERE excluido = 1 AND so_lanche = 0 AND aberto BETWEEN :i AND :f', $P)[0];
 $notas = castelo_an_info($pdo, 'pede-coxinha', 'notas_problema') ?: [];
 $nomeNota = ['0' => 'Rejeitadas', '8888' => 'Indefinidas', '999' => 'Em contingência (off-line)'];
 $imp = castelo_q($pdo, 'SELECT quando FROM an_importacoes WHERE empresa = "pede-coxinha" ORDER BY id DESC LIMIT 1')[0]['quando'] ?? null;
@@ -311,17 +310,12 @@ $wa = function (string $f): string {
   </section>
 </div>
 
-<div class="painel-grade an-tres">
+<div class="painel-grade an-duas">
   <section class="painel-card">
     <h2>Formas de pagamento</h2>
     <ul class="lista-simples">
       <?php foreach ($pag as $r): ?><li><span><?= h($r['f']) ?></span><strong><?= $pct((float) $r['v'], $k['v']) ?></strong></li><?php endforeach; ?>
     </ul>
-  </section>
-  <section class="painel-card">
-    <h2>Pedidos excluídos</h2>
-    <p class="an-grande"><?= castelo_num((float) $exc['n']) ?></p>
-    <p class="muted">no período, somando <?= castelo_reais((float) $exc['v']) ?>. Pode ser correção de lançamento; se subir muito, vale conferir.</p>
   </section>
   <section class="painel-card">
     <h2>Notas fiscais com problema</h2>

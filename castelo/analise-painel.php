@@ -51,11 +51,10 @@ $res = function (array $p) use ($pdo): array {
         FROM pc_itens it JOIN pc_pedidos p ON p.id = it.pedido_id WHERE p.excluido = 0 AND it.pai = 0 AND it.mini > 0 AND p.aberto BETWEEN :i AND :f', $p)[0];
     $novos = castelo_q($pdo, 'SELECT COUNT(*) n FROM (SELECT p.cliente_id, MIN(p.aberto) pr FROM pc_pedidos p WHERE p.excluido = 0 AND p.cliente_id IS NOT NULL
         AND EXISTS(SELECT 1 FROM pc_itens c WHERE c.pedido_id = p.id AND c.pai = 0 AND c.categoria = "cento") GROUP BY p.cliente_id) x WHERE pr BETWEEN :i AND :f', $p)[0]['n'];
-    $exc = castelo_q($pdo, 'SELECT COUNT(*) n FROM pc_pedidos WHERE excluido = 1 AND aberto BETWEEN :i AND :f', $p)[0]['n'];
     return ['v' => (float) $a['v'], 'n' => (float) $a['n'], 't' => $a['n'] > 0 ? $a['v'] / $a['n'] : 0, 'm' => (float) $m,
         'beb' => $c['n'] > 0 ? $c['b'] / $c['n'] * 100 : 0, 'centos' => (float) $c['n'],
         'cad' => $bl['n'] > 0 ? $bl['c'] / $bl['n'] * 100 : 0, 'enc' => $enc['t'] > 0 ? $enc['e'] / $enc['t'] * 100 : 0,
-        'novos' => (float) $novos, 'exc' => (float) $exc];
+        'novos' => (float) $novos];
 };
 $r = $res($P);
 $ra = $res($PA);
@@ -151,7 +150,6 @@ $meta = function (float $v, float $alvo): string {
         <li class="<?= $meta($r['novos'], max(1, $ra['novos'])) ?>"><span>Clientes novos de cento</span><b><?= castelo_num($r['novos']) ?></b><small>anterior: <?= castelo_num($ra['novos']) ?></small></li>
         <li class="<?= $meta($r['beb'], 25) ?>"><span>Centos com bebida</span><b><?= castelo_num($r['beb']) ?>%</b><small>meta: 25%</small></li>
         <li class="<?= $meta($r['cad'], 30) ?>"><span>Balcão com cliente cadastrado</span><b><?= castelo_num($r['cad']) ?>%</b><small>meta: 30%</small></li>
-        <li class="<?= $r['exc'] <= max(1, $ra['exc']) ? 'pn-ok' : 'pn-atencao' ?>"><span>Pedidos excluídos</span><b><?= castelo_num($r['exc']) ?></b><small>anterior: <?= castelo_num($ra['exc']) ?></small></li>
       </ul>
     </div>
   </section>
