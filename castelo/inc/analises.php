@@ -142,7 +142,7 @@ function castelo_svg_barras(array $dados, array $op = []): string {
     $fmt = $op['formato'] ?? 'num';
     $padL = 12; $padB = 30;
     $bw = ($w - $padL * 2) / $n;
-    $deitado = $bw < 50;
+    $deitado = $bw < ($op['min_deitado'] ?? 50);
     $padT = $deitado ? 70 : 26;
     $h = ($op['altura'] ?? 220) + ($deitado ? 40 : 0);
     $tot = [];
@@ -171,7 +171,7 @@ function castelo_svg_barras(array $dados, array $op = []): string {
             }
         }
         if ($tot[$rot] > 0) {
-            $txt = htmlspecialchars(castelo_curto($tot[$rot], $fmt), ENT_QUOTES);
+            $txt = htmlspecialchars(castelo_curto($tot[$rot], (!$deitado && $bw < 72) ? 'num' : $fmt), ENT_QUOTES);
             if ($deitado) {
                 $ty = round($base - 6, 1);
                 $svg .= '<text x="' . $cx . '" y="' . $ty . '" transform="rotate(-90 ' . $cx . ' ' . $ty . ')" dy="4" class="g-valor">' . $txt . '</text>';

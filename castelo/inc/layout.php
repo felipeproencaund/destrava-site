@@ -19,8 +19,8 @@ function destrava_admin_head(string $title, string $active = ''): void {
 <title><?= h($title) ?> | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=21">
-<script src="assets/castelo.js?v=5" defer></script>
+<link rel="stylesheet" href="assets/castelo.css?v=22">
+<script src="assets/castelo.js?v=6" defer></script>
 </head>
 <body class="castelo-body">
 <aside class="castelo-lado" id="castelo-lado">

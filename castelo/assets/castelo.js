@@ -37,3 +37,14 @@ document.querySelectorAll('[data-envia-sozinho]').forEach(function (i) {
 document.querySelectorAll('[data-envia-sozinho-select]').forEach(function (s) {
   s.addEventListener('change', function () { s.form.submit(); });
 });
+/* Painel da reunião: tela cheia (esconde o menu e pede tela cheia ao navegador) */
+document.querySelectorAll('[data-tela-cheia]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var on = document.body.classList.toggle('pn-cheia');
+    b.textContent = on ? 'Sair da tela cheia' : 'Tela cheia';
+    try {
+      if (on && document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+      else if (!on && document.fullscreenElement) { document.exitFullscreen(); }
+    } catch (e) {}
+  });
+});

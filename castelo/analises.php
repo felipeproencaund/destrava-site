@@ -18,7 +18,7 @@ destrava_admin_head('Análises', 'analises');
 ?>
 <div class="page-head"><div><p class="intersect-kicker">Torre de controle</p><h1>Análises</h1></div></div>
 <div class="an-empresas">
-  <a class="painel-card an-empresa" href="analise-pc.php">
+  <a class="painel-card an-empresa" href="analise-painel.php">
     <span class="kpi-rotulo">Pede Coxinha</span>
     <?php if ($pc): ?>
       <strong><?= castelo_reais((float) $pc['v']) ?></strong>
@@ -26,7 +26,7 @@ destrava_admin_head('Análises', 'analises');
     <?php else: ?>
       <strong>Sem dados</strong><span class="kpi-nota">Importe o arquivo do Consumer pra começar.</span>
     <?php endif; ?>
-    <span class="an-abrir">Abrir análise →</span>
+    <span class="an-abrir">Abrir painel da reunião →</span>
   </a>
   <a class="painel-card an-empresa" href="leads.php">
     <span class="kpi-rotulo">Destrava</span>

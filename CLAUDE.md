@@ -53,7 +53,7 @@ Dono: Felipe Proença. Este arquivo não vai pro servidor (fica fora do deploy).
 ## Castelo (área interna)
 - Endereço: castelo.vempradestrava.com.br (pasta `castelo/`, subdomínio criado na Hostinger em 05/11/2026).
 - Usa o mesmo banco e o mesmo config do quiz: `castelo/inc/auth.php` lê `diagnostico/php/config.php`.
-- Telas: Início (Intersect), CRM (leads.php, lead.php, novo.php), Financeiro (financeiro.php, fin-config.php, metas.php, comprovantes), Análises (analises.php, analise-pc.php, analise-importar.php), Erros, Minha conta. Contratos e Planejamento aparecem como "em breve" (modulo.php).
+- Telas: Início (Intersect), CRM (leads.php, lead.php, novo.php), Financeiro (financeiro.php, fin-config.php, metas.php, comprovantes), Análises (analises.php, analise-painel.php = painel da reunião, analise-pc.php = detalhada, analise-produto.php, analise-importar.php), Erros, Minha conta. Contratos e Planejamento aparecem como "em breve" (modulo.php).
 - Acesso: só usuário com `admin_users.castelo = 1` entra (hoje só felipeproenca). Usuários da equipe são da área da Destrava (diagnostico/admin), não do Castelo.
 - Análises da Pede Coxinha: tabelas `pc_clientes`, `pc_pedidos`, `pc_itens`, `an_info`, `an_importacoes`. Dados vêm do banco do Consumer (Firebird 4, backup .fbconsumer no Drive da Pede Coxinha) via arquivo .json.gz importado em analise-importar.php. Próximo passo: envio automático pelo computador da loja.
 - Sem script dentro do HTML (CSP): confirmações usam `data-confirm` e o JS fica em `castelo/assets/castelo.js`.

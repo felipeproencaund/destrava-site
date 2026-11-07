@@ -173,7 +173,7 @@ $wa = function (string $f): string {
     <h1>Pede Coxinha</h1>
     <p class="muted">Sem os lanches da Forasteiro (prensado, hot dog, hambúrguer artesanal e milkshake). Dados do Consumer até <?= h(date('d/m/Y H:i', strtotime($ult))) ?><?= $imp ? ' · importado em ' . h(date('d/m/Y', strtotime($imp))) : '' ?>. Período: <?= h(date('d/m/Y', strtotime($ini))) ?> a <?= h(date('d/m/Y', strtotime($fim))) ?> (<?= castelo_num($dias) ?> dias)<?= $temAnt ? ', comparado com os ' . castelo_num($dias) . ' dias anteriores' : ', sem comparação' ?>.</p>
   </div>
-  <div class="fin-mes"><a class="btn-sec" href="analise-importar.php">Importar dados</a></div>
+  <div class="fin-mes"><a class="btn-sec" href="analise-painel.php">Painel da reunião</a><a class="btn-sec" href="analise-importar.php">Importar dados</a></div>
 </div>
 <?= castelo_pc_periodo_html($pe, 'analise-pc.php') ?>
 
