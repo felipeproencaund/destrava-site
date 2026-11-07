@@ -2,10 +2,12 @@
 /** Estrutura comum das telas do Castelo: menu lateral, topo e rodapé. */
 function destrava_admin_head(string $title, string $active = ''): void {
     $menu = [
+        ['central', 'central.php', 'Central', 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10m0 4a1 1 0 1 0 0 2 1 1 0 0 0 0-2'],
         ['inicio', 'index.php', 'Início', 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
         ['leads', 'leads.php', 'CRM', 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8m13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75'],
         ['financeiro', 'financeiro.php', 'Financeiro', 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
         ['analises', 'analises.php', 'Análises', 'M3 3v18h18M7 15l4-4 3 3 6-6'],
+        ['mensagens', 'mensagens.php', 'Mensagens', 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.5 8.5 0 1 1 21 11.5z'],
         ['contratos', 'modulo.php?m=contratos', 'Contratos', 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4M10 9H8m8 4H8m8 4H8'],
         ['planejamento', 'modulo.php?m=planejamento', 'Planejamento', 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2'],
     ];
@@ -19,8 +21,8 @@ function destrava_admin_head(string $title, string $active = ''): void {
 <title><?= h($title) ?> | Castelo</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/castelo.css?v=22">
-<script src="assets/castelo.js?v=6" defer></script>
+<link rel="stylesheet" href="assets/castelo.css?v=26">
+<script src="assets/castelo.js?v=9" defer></script>
 </head>
 <body class="castelo-body">
 <aside class="castelo-lado" id="castelo-lado">

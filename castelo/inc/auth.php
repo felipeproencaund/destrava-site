@@ -44,6 +44,11 @@ function destrava_admin_require_login(): void {
         castelo_migrate_financeiro(destrava_db());
         $_SESSION['fin_migrated_v3'] = 1;
     }
+    if (empty($_SESSION['msg_migrated_v2'])) {
+        castelo_migrate_analises(destrava_db());
+        castelo_migrate_mensagens(destrava_db());
+        $_SESSION['msg_migrated_v2'] = 1;
+    }
     if (empty($_SESSION['an_migrated_v2'])) {
         castelo_migrate_analises(destrava_db());
         $_SESSION['an_migrated_v2'] = 1;

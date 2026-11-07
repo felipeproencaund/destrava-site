@@ -57,7 +57,8 @@ function castelo_importar_pc(PDO $pdo, string $conteudoGz, string $usuario): arr
         $canal = in_array($p['canal'] ?? '', $canais, true) ? $p['canal'] : 'balcao';
         $ped[] = [$p['id'], (int) ($p['numero'] ?? 0), $aberto, round((float) ($p['total'] ?? 0), 2), round((float) ($p['entrega'] ?? 0), 2),
             $canal, empty($p['agendado']) ? 0 : 1, $dt($p['previsto'] ?? null), is_int($p['cliente_id'] ?? null) ? $p['cliente_id'] : null,
-            isset($p['escola']) && $p['escola'] !== null ? $txt($p['escola'], 60) : null, empty($p['excluido']) ? 0 : 1, $txt($p['pagamento'] ?? '', 40)];
+            isset($p['escola']) && $p['escola'] !== null ? $txt($p['escola'], 60) : null, empty($p['excluido']) ? 0 : 1, $txt($p['pagamento'] ?? '', 40),
+            in_array($p['b2b'] ?? null, ['empresa', 'trabalho'], true) ? $p['b2b'] : null, isset($p['b2b_quem']) && $p['b2b_quem'] !== null ? $txt($p['b2b_quem'], 80) : null];
     }
     $its = [];
     foreach ($d['itens'] as $i) {
@@ -74,7 +75,7 @@ function castelo_importar_pc(PDO $pdo, string $conteudoGz, string $usuario): arr
     $pdo->beginTransaction();
     try {
         $lote('pc_clientes', ['id', 'nome', 'fone', 'bairro'], $cli);
-        $lote('pc_pedidos', ['id', 'numero', 'aberto', 'total', 'entrega', 'canal', 'agendado', 'previsto', 'cliente_id', 'escola', 'excluido', 'pagamento'], $ped);
+        $lote('pc_pedidos', ['id', 'numero', 'aberto', 'total', 'entrega', 'canal', 'agendado', 'previsto', 'cliente_id', 'escola', 'excluido', 'pagamento', 'b2b', 'b2b_quem'], $ped);
         $lote('pc_itens', ['id', 'pedido_id', 'pai', 'produto', 'categoria', 'qtd', 'valor', 'mini'], $its);
         castelo_pc_marca_lanches($pdo);
         $info = is_array($d['info'] ?? null) ? $d['info'] : [];

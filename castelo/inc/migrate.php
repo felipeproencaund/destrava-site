@@ -193,6 +193,10 @@ function castelo_migrate_analises(PDO $pdo): void {
         clientes INT NOT NULL DEFAULT 0,
         usuario VARCHAR(60) NOT NULL DEFAULT ''
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $temB = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pc_pedidos' AND COLUMN_NAME = 'b2b'")->fetchColumn();
+    if ((int) $temB === 0) {
+        $pdo->exec('ALTER TABLE pc_pedidos ADD COLUMN b2b VARCHAR(10) NULL, ADD COLUMN b2b_quem VARCHAR(80) NULL');
+    }
     $tem = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pc_pedidos' AND COLUMN_NAME = 'so_lanche'")->fetchColumn();
     if ((int) $tem === 0) {
         $pdo->exec('ALTER TABLE pc_pedidos ADD COLUMN lanche_valor DECIMAL(10,2) NOT NULL DEFAULT 0, ADD COLUMN so_lanche TINYINT(1) NOT NULL DEFAULT 0');
@@ -212,3 +216,62 @@ function castelo_pc_marca_lanches(PDO $pdo): void {
         SET p.lanche_valor = LEAST(x.lv, p.total), p.so_lanche = (x.outros = 0)');
 }
 
+
+/** Mensagens 1 a 1 pros clientes da Pede Coxinha: modelos, envios e quem não quer receber. */
+function castelo_migrate_mensagens(PDO $pdo): void {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_msg_modelos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        segmento VARCHAR(30) NOT NULL,
+        texto TEXT NOT NULL,
+        ativo TINYINT(1) NOT NULL DEFAULT 1,
+        INDEX idx_seg (segmento)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_msg_envios (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        cliente_id INT NOT NULL,
+        segmento VARCHAR(30) NOT NULL,
+        modelo_id INT NULL,
+        enviado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        usuario VARCHAR(60) NOT NULL DEFAULT '',
+        INDEX idx_cliente (cliente_id, enviado_em),
+        INDEX idx_data (enviado_em)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pc_msg_optout (
+        cliente_id INT PRIMARY KEY,
+        quando DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    if ((int) $pdo->query('SELECT COUNT(*) FROM pc_msg_modelos')->fetchColumn() === 0) {
+        $m = [
+            'esfriando' => [
+                'Oi, {nome}! Aqui é a Pede Coxinha. Seu último pedido de cento foi {quando}. A agenda de encomendas de dezembro já está aberta, e quem reserva antes garante o horário certinho. Quer que eu anote a sua data? É só me mandar o dia e a quantidade.',
+                'Oi, {nome}, tudo bem? Aqui é a Pede Coxinha. A gente faz cento e meio cento por encomenda, com os sabores que você escolher (coxinha, bolinho de frango, risoles, salsicha e kibe) e entrega no horário combinado. Tem alguma comemoração vindo aí?',
+                '{nome}, aqui é a Pede Coxinha! Vi que você costuma pedir {o_produto}. Se tiver aniversário, reunião ou festa nas próximas semanas, me fala a data que eu já deixo anotado.',
+            ],
+            'recompra' => [
+                'Oi, {nome}! Aqui é a Pede Coxinha. Seu último cento foi {quando}. Tem alguma comemoração chegando? Me manda a data, a quantidade e os sabores que eu deixo agendado.',
+                'Oi, {nome}, tudo bem? Da última vez você levou {o_produto}. Quer repetir pra alguma data? Encomendando com um dia de antecedência, fica pronto no horário que você escolher.',
+                '{nome}, aqui é a Pede Coxinha 😊 Dezembro está chegando e a agenda de encomendas já está aberta. Quer garantir seu cento pra alguma data?',
+            ],
+            'segunda' => [
+                'Oi, {nome}! Aqui é a Pede Coxinha. Obrigado pelo pedido! Salva nosso número: por aqui você encomenda cento e meio cento com data e horário marcados.',
+                'Oi, {nome}, tudo bem? Você pediu {o_produto} com a gente. Sabia que dá pra montar um cento com os sabores que você quiser? Coxinha, bolinho de frango, risoles, salsicha e kibe. É só me chamar aqui.',
+                '{nome}, aqui é a Pede Coxinha! Pra sua próxima festa, a gente entrega o cento no horário combinado. Me chama aqui com a data que eu já te passo tudo.',
+            ],
+            'sumiu' => [
+                'Oi, {nome}! Aqui é a Pede Coxinha. Seu último pedido com a gente foi {quando}. O cardápio ganhou novidades, como os pastéis doces de chocolate com morango e de Romeu e Julieta. Quer que eu te mande o cardápio atualizado?',
+                'Oi, {nome}, tudo bem? Aqui é a Pede Coxinha. Seguimos fazendo cento e meio cento por encomenda, com entrega no horário marcado. Tem alguma festa vindo aí? Me fala a data.',
+                '{nome}, aqui é a Pede Coxinha! As encomendas de fim de ano já começaram. Se for fazer alguma confraternização, me chama aqui que eu monto o cento do jeito que você gosta.',
+            ],
+            'fieis' => [
+                'Oi, {nome}! Aqui é a Pede Coxinha. Você está entre os clientes que mais pedem com a gente, então quis te avisar primeiro: a agenda de encomendas de dezembro já está aberta. Quer reservar alguma data?',
+                '{nome}, aqui é a Pede Coxinha 😊 Obrigado por pedir sempre com a gente! Saíram sabores novos de pastel doce: chocolate com morango, Romeu e Julieta e Sonho de Valsa. Quer provar no seu próximo pedido?',
+            ],
+        ];
+        $st = $pdo->prepare('INSERT INTO pc_msg_modelos (segmento, texto) VALUES (:s, :t)');
+        foreach ($m as $seg => $txts) {
+            foreach ($txts as $t) {
+                $st->execute(['s' => $seg, 't' => $t]);
+            }
+        }
+    }
+}
